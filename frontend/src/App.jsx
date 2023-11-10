@@ -1,20 +1,24 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { Home } from './components/misc/homePage';
 import { Login } from './components/auth/loginPage';
 import { Register } from './components/auth/registerPage';
 import ErrorPage from './components/misc/notFoundPage';
+import Navbar from './components/misc/Navbar';
 
 function App () {
   return (
-    <BrowserRouter>
+    <>
+    <Navbar/>
+    <div>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register"element={<Register />} />
-        <Route path="*"element={<ErrorPage />} />
+      <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register"element={<Register />} />
+          <Route path="*" element={<ErrorPage />} />
       </Routes>
-    </BrowserRouter>
+    </div>
+    </>
   );
 }
 
