@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -8,9 +8,26 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Alert from '@mui/material/Alert';
+import MuiLink from '@mui/material/Link';
+import Snackbar from '@mui/material/Snackbar';
+
+const CustomLink = React.forwardRef((props, ref) => (
+  <RouterLink ref={ref} {...props} />
+));
+
+CustomLink.displayName = 'CustomLink';
 
 export function Login () {
-  const [error, setError] = React.useState(null);
+  // eslint-disable-next-line
+  const [openError, setOpenError] = useState(false);
+  // eslint-disable-next-line
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleCloseError = () => {
+    setOpenError(false);
+  };
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -33,12 +50,15 @@ export function Login () {
         // Assuming the token is in the response data
         const token = data.token;
         localStorage.setItem('token', token);
+        navigate('/');
       } else {
         const data = await response.json();
-        setError(data.message);
+        setErrorMessage(data.error);
+        setOpenError(true);
       }
     } catch (error) {
-      console.error('Error during login:', error);
+      setErrorMessage('An unexpected error occurred');
+      setOpenError(true);
     }
   };
 
@@ -56,7 +76,6 @@ export function Login () {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        {error && <Alert severity="error">{error}</Alert>}
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
             margin="normal"
@@ -88,13 +107,28 @@ export function Login () {
           </Button>
           <Grid container justifyContent="center">
             <Grid item>
-            <RouterLink to="/register" variant="body2">
+              <MuiLink
+                component={CustomLink}
+                to="/register"
+                variant="body2"
+                color="inherit"
+              >
                 {"Don't have an account? Sign Up"}
-              </RouterLink>
+              </MuiLink>
             </Grid>
           </Grid>
         </Box>
       </Box>
+      <Snackbar
+        open={openError}
+        autoHideDuration={5000}
+        onClose={handleCloseError}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseError} severity="error">
+          {errorMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }
