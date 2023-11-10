@@ -32,10 +32,10 @@ const Navbar = () => {
             {isLoggedIn
               ? (
               <>
-                <Button color="inherit" omponent={RouterLink} to="/mylistings">
+                <Button color="inherit" component={RouterLink} to="/mylistings">
                   My Listings
                 </Button>
-                <Button color="inherit" omponent={RouterLink} to="/listings">
+                <Button color="inherit" component={RouterLink} to="/listings">
                   All Listings
                 </Button>
                 <Button color="inherit" onClick={logout}>
