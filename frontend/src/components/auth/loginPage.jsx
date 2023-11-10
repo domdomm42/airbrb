@@ -1,8 +1,8 @@
-import * as React from 'react';
+import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -86,16 +86,11 @@ export function Login () {
           >
             Sign In
           </Button>
-          <Grid container>
-            <Grid item xs>
-              <Link href="#" variant="body2">
-                Forgot password?
-              </Link>
-            </Grid>
+          <Grid container justifyContent="center">
             <Grid item>
-              <Link href="#" variant="body2">
+            <RouterLink to="/register" variant="body2">
                 {"Don't have an account? Sign Up"}
-              </Link>
+              </RouterLink>
             </Grid>
           </Grid>
         </Box>
