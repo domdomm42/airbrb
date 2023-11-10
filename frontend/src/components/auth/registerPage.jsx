@@ -35,27 +35,33 @@ export function Register () {
     const name = formData.get('name');
     const email = formData.get('email');
     const password = formData.get('password');
+    const confirmPassword = formData.get('confirm-password');
 
-    try {
-      const response = await fetch('http://localhost:5005/user/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password, name }),
-      });
+    if (password !== confirmPassword) {
+      setErrorMessage('Passwords do not match');
+      setOpenError(true);
+    } else {
+      try {
+        const response = await fetch('http://localhost:5005/user/auth/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password, name }),
+        });
 
-      if (response.ok) {
-        // Registration successful, navigate to the home page
-        navigate('/');
-      } else {
-        const data = await response.json();
-        setErrorMessage(data.error);
+        if (response.ok) {
+          // Registration successful, navigate to the home page
+          navigate('/');
+        } else {
+          const data = await response.json();
+          setErrorMessage(data.error);
+          setOpenError(true);
+        }
+      } catch (error) {
+        setErrorMessage('An unexpected error occurred');
         setOpenError(true);
       }
-    } catch (error) {
-      setErrorMessage('An unexpected error occurred');
-      setOpenError(true);
     }
   };
 
@@ -96,15 +102,24 @@ export function Register () {
                 autoComplete="email"
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 required
-                fullWidth
                 name="password"
                 label="Password"
                 type="password"
                 id="password"
                 autoComplete="new-password"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                required
+                name="confirm-password"
+                label="Confirm Password"
+                type="password"
+                id="confirm-password"
+                autoComplete="new-confirm-password"
               />
             </Grid>
           </Grid>
