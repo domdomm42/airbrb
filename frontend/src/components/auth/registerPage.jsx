@@ -10,6 +10,7 @@ import Container from '@mui/material/Container';
 import MuiLink from '@mui/material/Link';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import { useAuth } from './authContext';
 
 const CustomLink = React.forwardRef((props, ref) => (
   <RouterLink ref={ref} {...props} />
@@ -26,7 +27,10 @@ export function Register () {
   const handleCloseError = () => {
     setOpenError(false);
   };
+
   const navigate = useNavigate();
+
+  const { login } = useAuth();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -51,7 +55,11 @@ export function Register () {
         });
 
         if (response.ok) {
-          // Registration successful, navigate to the home page
+          const data = await response.json();
+          // Assuming the token is in the response data
+          const token = data.token;
+          localStorage.setItem('token', token);
+          login();
           navigate('/');
         } else {
           const data = await response.json();

@@ -4,9 +4,15 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-import Logo from './logo.jsx'
+import Button from '@mui/material/Button';
+import { Link as RouterLink } from 'react-router-dom';
+import Logo from './logo.jsx';
+import { useAuth } from '../auth/authContext';
 
-export default function Navbar () {
+const Navbar = () => {
+  // Check if the user is logged in based on the presence of the token
+  const { isLoggedIn, logout } = useAuth();
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
@@ -21,8 +27,37 @@ export default function Navbar () {
             <MenuIcon />
           </IconButton>
           <Logo />
+          <div style={{ marginLeft: 'auto' }}>
+            {/* Conditionally render login, signup, or logout button based on the user's login status */}
+            {isLoggedIn
+              ? (
+              <>
+                <Button color="inherit" omponent={RouterLink} to="/mylistings">
+                  My Listings
+                </Button>
+                <Button color="inherit" omponent={RouterLink} to="/listings">
+                  All Listings
+                </Button>
+                <Button color="inherit" onClick={logout}>
+                  Logout
+                </Button>
+              </>
+                )
+              : (
+              <>
+                <Button color="inherit" component={RouterLink} to="/login">
+                  Login
+                </Button>
+                <Button color="inherit" component={RouterLink} to="/register">
+                  Sign Up
+                </Button>
+              </>
+                )}
+          </div>
         </Toolbar>
       </AppBar>
     </Box>
   );
-}
+};
+
+export default Navbar;

@@ -10,6 +10,7 @@ import Container from '@mui/material/Container';
 import Alert from '@mui/material/Alert';
 import MuiLink from '@mui/material/Link';
 import Snackbar from '@mui/material/Snackbar';
+import { useAuth } from './authContext';
 
 const CustomLink = React.forwardRef((props, ref) => (
   <RouterLink ref={ref} {...props} />
@@ -28,6 +29,8 @@ export function Login () {
   };
 
   const navigate = useNavigate();
+
+  const { login } = useAuth();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -50,6 +53,7 @@ export function Login () {
         // Assuming the token is in the response data
         const token = data.token;
         localStorage.setItem('token', token);
+        login();
         navigate('/');
       } else {
         const data = await response.json();
