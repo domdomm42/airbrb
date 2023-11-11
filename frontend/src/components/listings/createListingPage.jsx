@@ -33,8 +33,30 @@ export function CreateListing () {
   const [listingThumbnail, setThumbnail] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState('');
 
+  const [numBedrooms, setNumBedrooms] = useState('');
+  const BED_SIZES = ['Single', 'Double', 'Queen', 'King'];
+  const [bedroomDetails, setBedroomDetails] = useState([]);
+
   const handlePropertyTypeChange = (event) => {
     setPropertyType(event.target.value);
+  };
+
+  const handleBedroomCountChange = (event) => {
+    const count = Number(event.target.value);
+    let value = event.target.value;
+    value = parseInt(value, 10);
+
+    if (isNaN(value)) {
+      value = '';
+    }
+    setNumBedrooms(value);
+    setBedroomDetails(new Array(count).fill({ bedType: '' }));
+  };
+
+  const handleBedroomDetailChange = (index, value) => {
+    const updatedDetails = [...bedroomDetails];
+    updatedDetails[index] = { bedType: value };
+    setBedroomDetails(updatedDetails);
   };
 
   const handleThumbnailChange = (event) => {
@@ -63,6 +85,7 @@ export function CreateListing () {
   const handleCloseError = () => {
     setOpenError(false);
   };
+
   const handleCreateListings = async (event) => {
     event.preventDefault();
 
@@ -75,18 +98,31 @@ export function CreateListing () {
     const numBathrooms = formData.get('numBathrooms');
     const numBedrooms = formData.get('numBedrooms');
 
+    // Assuming you can't rent a room without a room or a bathroom, also assuming you can rent your place out for free for whatever reason.
+    if (parseInt(numBathrooms) < 1 || parseInt(numBedrooms) < 1 || parseInt(price) < 0) {
+      setErrorMessage('Numbers cannot be less than 0');
+      setOpenError(true);
+      return;
+    }
+
+    if (!title || !address || price === null || !thumbnail || !propertyType || !numBathrooms || !numBedrooms || bedroomDetails.length !== parseInt(numBedrooms)) {
+      setErrorMessage('Please fill in all required fields.');
+      setOpenError(true);
+      return;
+    }
+
     if (thumbnail) {
       formData.append('thumbnail', listingThumbnail);
     }
+    const metadata = {
+      propertyType,
+      bathrooms: JSON.parse(numBathrooms),
+      bedrooms: JSON.parse(numBedrooms),
+      amenities,
+      bedroomDetails
+    };
 
     try {
-      const metadata = {
-        propertyType,
-        bathrooms: JSON.parse(numBathrooms),
-        bedrooms: JSON.parse(numBedrooms),
-        amenities,
-      };
-
       const response = await fetch('http://localhost:5005/listings/new', {
         method: 'POST',
         headers: {
@@ -95,32 +131,22 @@ export function CreateListing () {
         },
         body: JSON.stringify({
           title,
-          address: JSON.parse(address),
-          price,
+          address,
+          price: JSON.parse(price),
           thumbnail,
           metadata,
         }),
       });
 
-      if (response.ok) {
-        navigate('/');
-      } else {
+      if (!response.ok) {
         const data = await response.json();
-        switch (response.status) {
-          case 400:
-            setErrorMessage(data.error || 'Bad request (400). Please check your input.');
-            break;
-          case 403:
-            setErrorMessage(data.error || 'Forbidden (403). You do not have permission to do this.');
-            navigate('/');
-            break;
-          default:
-            setErrorMessage(data.error || 'An unexpected error occurred.');
-            break;
-        }
+        setErrorMessage(data.error || 'An error occurred');
         setOpenError(true);
+      } else {
+        navigate('/');
       }
     } catch (error) {
+      console.log(error);
       setErrorMessage('An unexpected error occurred');
       setOpenError(true);
     }
@@ -231,12 +257,34 @@ export function CreateListing () {
               <TextField
                 required
                 fullWidth
-                id='numBedrooms'
-                label='Number of Bedrooms'
-                name='numBedrooms'
-                type='number'
+                id="numBedrooms"
+                label="Number of Bedrooms"
+                name="numBedrooms"
+                type="number"
+                value={numBedrooms}
+                onChange={handleBedroomCountChange}
               />
             </Grid>
+            {bedroomDetails.map((detail, index) => (
+              <Grid item xs={12} key={index}>
+                <FormControl required fullWidth>
+                  <InputLabel id={`bed-type-label-${index}`}>{`Bed Type in Bedroom ${index + 1}`}</InputLabel>
+                  <Select
+                    labelId={`bed-type-label-${index}`}
+                    id={`bed-type-select-${index}`}
+                    value={detail.bedType}
+                    label={`Bed Type in Bedroom ${index + 1}`}
+                    onChange={(e) => handleBedroomDetailChange(index, e.target.value)}
+                  >
+                    {BED_SIZES.map((size) => (
+                      <MenuItem key={size} value={size}>
+                        {size}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            ))}
             <Grid item xs={12}>
               <FormGroup>
                 <FormControlLabel
