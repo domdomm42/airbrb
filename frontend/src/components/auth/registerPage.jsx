@@ -59,6 +59,7 @@ export function Register () {
           // Assuming the token is in the response data
           const token = data.token;
           localStorage.setItem('token', token);
+          localStorage.setItem('email', email);
           login();
           navigate('/');
         } else {
