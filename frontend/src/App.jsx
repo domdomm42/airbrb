@@ -20,7 +20,7 @@ function App () {
           <Route path="/register"element={<Register />} />
           <Route path="/mylistings"element={<Mylistings />} />
           <Route path="/createlisting"element={<CreateListing />} />
-          <Route path="/editlisting"element={<EditListing />} />
+          <Route path="/listings/:listingid"element={<EditListing />} />
           <Route path="*" element={<ErrorPage />} />
       </Routes>
     </div>
