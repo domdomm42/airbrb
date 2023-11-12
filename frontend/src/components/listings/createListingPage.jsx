@@ -16,6 +16,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
+
+import { ListingHelpers } from './helper.jsx';
 const CustomLink = React.forwardRef((props, ref) => (
   <RouterLink ref={ref} {...props} />
 ));
@@ -37,54 +39,21 @@ export function CreateListing () {
   const BED_SIZES = ['Single', 'Double', 'Queen', 'King'];
   const [bedroomDetails, setBedroomDetails] = useState([]);
 
-  const handlePropertyTypeChange = (event) => {
-    setPropertyType(event.target.value);
-  };
+  const {
+    handlePropertyTypeChange,
+    handleBedroomCountChange,
+    handleBedroomDetailChange,
+    handleThumbnailChange,
+    handleAmenityChange,
+    handleCloseError,
+  } = ListingHelpers();
 
-  const handleBedroomCountChange = (event) => {
-    const count = Number(event.target.value);
-    let value = event.target.value;
-    value = parseInt(value, 10);
-
-    if (isNaN(value)) {
-      value = '';
-    }
-    setNumBedrooms(value);
-    setBedroomDetails(new Array(count).fill({ bedType: '' }));
-  };
-
-  const handleBedroomDetailChange = (index, value) => {
-    const updatedDetails = [...bedroomDetails];
-    updatedDetails[index] = { bedType: value };
-    setBedroomDetails(updatedDetails);
-  };
-
-  const handleThumbnailChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setThumbnail(reader.result);
-        setThumbnailPreview(URL.createObjectURL(file));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleAmenityChange = (event) => {
-    const { value, checked } = event.target;
-    setAmenities((prev) => {
-      if (checked) {
-        return [...prev, value];
-      } else {
-        return prev.filter((amenity) => amenity !== value);
-      }
-    });
-  };
-
-  const handleCloseError = () => {
-    setOpenError(false);
-  };
+  const onPropertyTypeChange = handlePropertyTypeChange(setPropertyType);
+  const onBedroomCountChange = handleBedroomCountChange(setNumBedrooms, setBedroomDetails);
+  const onBedroomDetailChange = handleBedroomDetailChange(bedroomDetails, setBedroomDetails);
+  const onThumbnailChange = handleThumbnailChange(setThumbnail, setThumbnailPreview);
+  const onAmenityChange = handleAmenityChange(amenities, setAmenities);
+  const onCloseError = handleCloseError(setOpenError);
 
   const handleCreateListings = async (event) => {
     event.preventDefault();
@@ -99,13 +68,26 @@ export function CreateListing () {
     const numBedrooms = formData.get('numBedrooms');
 
     // Assuming you can't rent a room without a room or a bathroom, also assuming you can rent your place out for free for whatever reason.
-    if (parseInt(numBathrooms) < 1 || parseInt(numBedrooms) < 1 || parseInt(price) < 0) {
+    if (
+      parseInt(numBathrooms) < 1 ||
+      parseInt(numBedrooms) < 1 ||
+      parseInt(price) < 0
+    ) {
       setErrorMessage('Numbers cannot be less than 0');
       setOpenError(true);
       return;
     }
 
-    if (!title || !address || price === null || !thumbnail || !propertyType || !numBathrooms || !numBedrooms || bedroomDetails.length !== parseInt(numBedrooms)) {
+    if (
+      !title ||
+      !address ||
+      price === null ||
+      !thumbnail ||
+      !propertyType ||
+      !numBathrooms ||
+      !numBedrooms ||
+      bedroomDetails.length !== parseInt(numBedrooms)
+    ) {
       setErrorMessage('Please fill in all required fields.');
       setOpenError(true);
       return;
@@ -119,7 +101,7 @@ export function CreateListing () {
       bathrooms: JSON.parse(numBathrooms),
       bedrooms: JSON.parse(numBedrooms),
       amenities,
-      bedroomDetails
+      bedroomDetails,
     };
 
     try {
@@ -205,44 +187,44 @@ export function CreateListing () {
               />
             </Grid>
             <Grid item xs={12}>
-          <Button variant='contained' component='label'>
-            Upload Thumbnail
-            <input
-              type='file'
-              hidden
-              onChange={handleThumbnailChange}
-            />
-          </Button>
-          {thumbnailPreview && (
-            <Box mt={2} textAlign="center">
-              <img src={thumbnailPreview} alt="Thumbnail Preview" style={{ maxWidth: '100%', height: 'auto' }} />
-            </Box>
-          )}
+              <Button variant='contained' component='label'>
+                Upload Thumbnail
+                <input type='file' hidden onChange={onThumbnailChange} />
+              </Button>
+              {thumbnailPreview && (
+                <Box mt={2} textAlign='center'>
+                  <img
+                    src={thumbnailPreview}
+                    alt='Thumbnail Preview'
+                    style={{ maxWidth: '100%', height: 'auto' }}
+                  />
+                </Box>
+              )}
             </Grid>
             <Grid item xs={12}>
-            <FormControl required fullWidth>
-              <InputLabel id="propertyType-label">Property Type</InputLabel>
-              <Select
-                labelId="propertyType-label"
-                id="propertyType"
-                name="propertyType"
-                value={propertyType}
-                onChange={handlePropertyTypeChange}
-                label="Property Type"
-              >
-                <MenuItem value="Apartment">Apartment</MenuItem>
-                <MenuItem value="House">House</MenuItem>
-                <MenuItem value="Condo">Condo</MenuItem>
-                <MenuItem value="Townhouse">Townhouse</MenuItem>
-                <MenuItem value="Studio">Studio</MenuItem>
-                <MenuItem value="Villa">Villa</MenuItem>
-                <MenuItem value="Cabin">Cabin</MenuItem>
-                <MenuItem value="Cottage">Cottage</MenuItem>
-                <MenuItem value="Bungalow">Bungalow</MenuItem>
-                <MenuItem value="Duplex">Duplex</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
+              <FormControl required fullWidth>
+                <InputLabel id='propertyType-label'>Property Type</InputLabel>
+                <Select
+                  labelId='propertyType-label'
+                  id='propertyType'
+                  name='propertyType'
+                  value={propertyType}
+                  onChange={onPropertyTypeChange}
+                  label='Property Type'
+                >
+                  <MenuItem value='Apartment'>Apartment</MenuItem>
+                  <MenuItem value='House'>House</MenuItem>
+                  <MenuItem value='Condo'>Condo</MenuItem>
+                  <MenuItem value='Townhouse'>Townhouse</MenuItem>
+                  <MenuItem value='Studio'>Studio</MenuItem>
+                  <MenuItem value='Villa'>Villa</MenuItem>
+                  <MenuItem value='Cabin'>Cabin</MenuItem>
+                  <MenuItem value='Cottage'>Cottage</MenuItem>
+                  <MenuItem value='Bungalow'>Bungalow</MenuItem>
+                  <MenuItem value='Duplex'>Duplex</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
             <Grid item xs={12}>
               <TextField
                 required
@@ -257,24 +239,28 @@ export function CreateListing () {
               <TextField
                 required
                 fullWidth
-                id="numBedrooms"
-                label="Number of Bedrooms"
-                name="numBedrooms"
-                type="number"
+                id='numBedrooms'
+                label='Number of Bedrooms'
+                name='numBedrooms'
+                type='number'
                 value={numBedrooms}
-                onChange={handleBedroomCountChange}
+                onChange={onBedroomCountChange}
               />
             </Grid>
             {bedroomDetails.map((detail, index) => (
               <Grid item xs={12} key={index}>
                 <FormControl required fullWidth>
-                  <InputLabel id={`bed-type-label-${index}`}>{`Bed Type in Bedroom ${index + 1}`}</InputLabel>
+                  <InputLabel
+                    id={`bed-type-label-${index}`}
+                  >{`Bed Type in Bedroom ${index + 1}`}</InputLabel>
                   <Select
                     labelId={`bed-type-label-${index}`}
                     id={`bed-type-select-${index}`}
                     value={detail.bedType}
                     label={`Bed Type in Bedroom ${index + 1}`}
-                    onChange={(e) => handleBedroomDetailChange(index, e.target.value)}
+                    onChange={(e) =>
+                      onBedroomDetailChange(index, e.target.value)
+                    }
                   >
                     {BED_SIZES.map((size) => (
                       <MenuItem key={size} value={size}>
@@ -291,31 +277,31 @@ export function CreateListing () {
                   control={
                     <Checkbox
                       checked={amenities.includes('WiFi')}
-                      onChange={handleAmenityChange}
-                      value="WiFi"
+                      onChange={onAmenityChange}
+                      value='WiFi'
                     />
                   }
-                  label="WiFi"
+                  label='WiFi'
                 />
                 <FormControlLabel
                   control={
                     <Checkbox
                       checked={amenities.includes('Pool')}
-                      onChange={handleAmenityChange}
-                      value="Pool"
+                      onChange={onAmenityChange}
+                      value='Pool'
                     />
                   }
-                  label="Pool"
+                  label='Pool'
                 />
                 <FormControlLabel
                   control={
                     <Checkbox
                       checked={amenities.includes('Gym')}
-                      onChange={handleAmenityChange}
-                      value="Gym"
+                      onChange={onAmenityChange}
+                      value='Gym'
                     />
                   }
-                  label="Gym"
+                  label='Gym'
                 />
               </FormGroup>
             </Grid>
@@ -335,10 +321,10 @@ export function CreateListing () {
       <Snackbar
         open={openError}
         autoHideDuration={5000}
-        onClose={handleCloseError}
+        onClose={onCloseError}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert onClose={handleCloseError} severity='error'>
+        <Alert onClose={onCloseError} severity='error'>
           {errorMessage}
         </Alert>
       </Snackbar>
