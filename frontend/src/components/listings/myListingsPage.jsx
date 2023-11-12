@@ -17,7 +17,6 @@ import HotelIcon from '@mui/icons-material/Hotel';
 
 const MyListings = () => {
   // State to store the user's listings
-  // eslint-disable-next-line
   const [userListings, setUserListings] = useState([]);
 
   useEffect(() => {
