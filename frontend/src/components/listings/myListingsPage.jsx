@@ -45,6 +45,7 @@ const MyListings = () => {
                 },
               });
               const detailedListing = await res.json();
+              detailedListing.id = listing.id;
               return detailedListing;
             })
           );
@@ -59,7 +60,6 @@ const MyListings = () => {
 
     fetchUserListings();
   }, []);
-
   return (
     <>
       <CssBaseline />
@@ -149,12 +149,12 @@ const MyListings = () => {
                       <CardActions>
                         <Grid container justifyContent="space-between">
                         <Grid item>
-                            <Button size="small" >
+                            <Button size="small" component={RouterLink} to={`/publishlisting/${listing.id}`}>
                               Go Live
                             </Button>
                           </Grid>
                           <Grid item>
-                            <Button size="small" >
+                            <Button size="small" component={RouterLink} to={`/editlisting/${listing.id}`}>
                               Edit
                             </Button>
                           </Grid>
