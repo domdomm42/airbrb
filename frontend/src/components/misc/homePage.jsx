@@ -39,7 +39,20 @@ export const Home = () => {
               return detailedListing;
             })
           );
-          setUserListings(detailedListings);
+          const sortedListings = [...detailedListings].sort((a, b) => {
+            const titleA = a.listing.title.toUpperCase();
+            const titleB = b.listing.title.toUpperCase();
+
+            if (titleA < titleB) {
+              return -1;
+            }
+            if (titleA > titleB) {
+              return 1;
+            }
+            return 0;
+          });
+
+          setUserListings(sortedListings);
         } else {
           console.error('Error fetching user listings');
         }
@@ -50,6 +63,7 @@ export const Home = () => {
 
     fetchUserListings();
   }, []);
+
   return (
     <>
       <CssBaseline />
