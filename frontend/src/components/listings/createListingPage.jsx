@@ -42,7 +42,7 @@ export function CreateListing () {
   const {
     handlePropertyTypeChange,
     handleBedroomCountChange,
-    handleBedroomDetailChange,
+    handleBedTypeChange,
     handleThumbnailChange,
     handleAmenityChange,
     handleCloseError,
@@ -50,10 +50,30 @@ export function CreateListing () {
 
   const onPropertyTypeChange = handlePropertyTypeChange(setPropertyType);
   const onBedroomCountChange = handleBedroomCountChange(setNumBedrooms, setBedroomDetails);
-  const onBedroomDetailChange = handleBedroomDetailChange(bedroomDetails, setBedroomDetails);
+  const onBedTypeChange = handleBedTypeChange(bedroomDetails, setBedroomDetails);
   const onThumbnailChange = handleThumbnailChange(setThumbnail, setThumbnailPreview);
   const onAmenityChange = handleAmenityChange(amenities, setAmenities);
   const onCloseError = handleCloseError(setOpenError);
+
+  const removeBedFromRoom = (roomIndex, bedIndex) => {
+    setBedroomDetails(currentBedrooms => {
+      // Clone the current state to avoid direct mutation
+      const updatedBedrooms = [...currentBedrooms];
+      // Check if the specified bed exists before removing
+      if (updatedBedrooms[roomIndex] && updatedBedrooms[roomIndex].beds[bedIndex] !== undefined) {
+        updatedBedrooms[roomIndex].beds.splice(bedIndex, 1);
+      }
+      return updatedBedrooms;
+    });
+  };
+
+  const addBedToRoom = (roomIndex) => {
+    setBedroomDetails(currentBedrooms => {
+      const updatedBedrooms = [...currentBedrooms];
+      updatedBedrooms[roomIndex].beds.push({ type: '' });
+      return updatedBedrooms;
+    });
+  };
 
   const handleCreateListings = async (event) => {
     event.preventDefault();
@@ -66,6 +86,7 @@ export function CreateListing () {
     const propertyType = formData.get('propertyType');
     const numBathrooms = formData.get('numBathrooms');
     const numBedrooms = formData.get('numBedrooms');
+    const pictures = [];
 
     // Assuming you can't rent a room without a room or a bathroom, also assuming you can rent your place out for free for whatever reason.
     if (
@@ -95,14 +116,25 @@ export function CreateListing () {
 
     if (thumbnail) {
       formData.append('thumbnail', listingThumbnail);
+      pictures.push(thumbnail);
     }
+
+    const totalBeds = bedroomDetails.reduce((total, room) => {
+      const filledBeds = room.beds.filter(bed => bed.type !== '');
+      return total + filledBeds.length;
+    }, 0);
+
     const metadata = {
+      pictures,
       propertyType,
       bathrooms: JSON.parse(numBathrooms),
       bedrooms: JSON.parse(numBedrooms),
+      numBeds: totalBeds,
       amenities,
       bedroomDetails,
     };
+
+    console.log(metadata);
 
     try {
       const response = await fetch('http://localhost:5005/listings/new', {
@@ -247,30 +279,40 @@ export function CreateListing () {
                 onChange={onBedroomCountChange}
               />
             </Grid>
-            {bedroomDetails.map((detail, index) => (
-              <Grid item xs={12} key={index}>
-                <FormControl required fullWidth>
-                  <InputLabel
-                    id={`bed-type-label-${index}`}
-                  >{`Bed Type in Bedroom ${index + 1}`}</InputLabel>
-                  <Select
-                    labelId={`bed-type-label-${index}`}
-                    id={`bed-type-select-${index}`}
-                    value={detail.bedType}
-                    label={`Bed Type in Bedroom ${index + 1}`}
-                    onChange={(e) =>
-                      onBedroomDetailChange(index, e.target.value)
-                    }
-                  >
-                    {BED_SIZES.map((size) => (
-                      <MenuItem key={size} value={size}>
-                        {size}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
+            {bedroomDetails.map((room, roomIndex) => (
+          <Grid item xs={12} key={roomIndex}>
+            <Typography variant="subtitle1">Bedroom {roomIndex + 1}</Typography>
+
+            {room.beds.length === 0
+              ? <Typography>No beds</Typography>
+              : room.beds.map((bed, bedIndex) => (
+                  <FormControl fullWidth key={`bed-${roomIndex}-${bedIndex}`}>
+                    <InputLabel id={`bed-type-label-${roomIndex}-${bedIndex}`}>Bed {bedIndex + 1} Type</InputLabel>
+                    <Select
+                      labelId={`bed-type-label-${roomIndex}-${bedIndex}`}
+                      label={`Bed ${bedIndex + 1} Type`}
+                      value={bed.type}
+                      onChange={(e) => onBedTypeChange(roomIndex, bedIndex, e.target.value)}
+                    >
+                      {BED_SIZES.map((size, sizeIndex) => (
+                        <MenuItem key={sizeIndex} value={size}>{size}</MenuItem>
+                      ))}
+                    </Select>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      onClick={() => removeBedFromRoom(roomIndex, bedIndex)}
+                    >
+                      Remove Bed {bedIndex + 1}
+                    </Button>
+                  </FormControl>
+              )
+              )}
+
+            <Button onClick={() => addBedToRoom(roomIndex)}>Add Bed to Room {roomIndex + 1}</Button>
+          </Grid>
             ))}
+
             <Grid item xs={12}>
               <FormGroup>
                 <FormControlLabel

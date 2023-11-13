@@ -24,17 +24,20 @@ export const ListingHelpers = () => {
     const number = parseInt(value, 10);
     if (value === '') {
       setNumBedrooms('');
+      setBedroomDetails([]);
     } else if (!isNaN(number)) {
       setNumBedrooms(number);
-      setBedroomDetails(new Array(number).fill({ bedType: '' }));
+      setBedroomDetails(Array.from({ length: number }, () => ({ beds: [] })));
     }
   };
-  const handleBedroomDetailChange = (bedroomDetails, setBedroomDetails) => (index, value) => {
-    const updatedDetails = [...bedroomDetails];
-    updatedDetails[index] = { bedType: value };
-    setBedroomDetails(updatedDetails);
+  const handleBedTypeChange = (bedroomDetails, setBedroomDetails) => (roomIndex, bedIndex, bedType) => {
+    const updatedBedrooms = [...bedroomDetails];
+    if (!updatedBedrooms[roomIndex].beds[bedIndex]) {
+      updatedBedrooms[roomIndex].beds[bedIndex] = {};
+    }
+    updatedBedrooms[roomIndex].beds[bedIndex].type = bedType;
+    setBedroomDetails(updatedBedrooms);
   };
-
   const handleThumbnailChange = (setThumbnail, setThumbnailPreview) => (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -69,7 +72,7 @@ export const ListingHelpers = () => {
     handleBathroomChange,
     handlePropertyTypeChange,
     handleBedroomCountChange,
-    handleBedroomDetailChange,
+    handleBedTypeChange,
     handleThumbnailChange,
     handleAmenityChange,
     handleCloseError,
