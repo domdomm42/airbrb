@@ -9,9 +9,9 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import ButtonGroup from '@mui/material/ButtonGroup';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import Grid from '@mui/material/Grid';
 
 const PublishListing = () => {
   const [availability, setAvailability] = useState([{ start: null, end: null }]);
@@ -87,34 +87,58 @@ const PublishListing = () => {
         <Typography component='h1' variant='h5' mb={3}>
           Publish Listing
         </Typography>
-        {availability.map((item, index) => (
-          <Box key={index} mb={6} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly' }}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                label={`Start Date ${index + 1}`}
-                value={item.start}
-                onChange={(date) => handleDateChange(date, index, 'start')}
-                textField={(props) => <TextField {...props} InputLabelProps={{ shrink: true }} />}
-              />
-            </LocalizationProvider>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                label={`End Date ${index + 1}`}
-                value={item.end}
-                onChange={(date) => handleDateChange(date, index, 'end')}
-                textField={(props) => <TextField {...props} InputLabelProps={{ shrink: true }} />}
-              />
-            </LocalizationProvider>
-          </Box>
-        ))}
-        <ButtonGroup spacing="1rem" aria-label="spacing button group">
-          <Button variant="contained" color="primary" onClick={addAvailabilityField}>
-            Add Availability
-          </Button>
-          <Button variant="contained" color="primary" onClick={handlePublish}>
-            Publish
-          </Button>
-        </ButtonGroup>
+        <Grid container spacing={3} mb={4}>
+          {availability.map((item, index) => (
+            <React.Fragment key={index}>
+              <Grid item xs={12} md={6}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      label={`Start Date ${index + 1}`}
+                      value={item.start}
+                      onChange={(date) => handleDateChange(date, index, 'start')}
+                      textField={(props) => <TextField {...props} InputLabelProps={{ shrink: true }} />}
+                    />
+                  </LocalizationProvider>
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      label={`End Date ${index + 1}`}
+                      value={item.end}
+                      onChange={(date) => handleDateChange(date, index, 'end')}
+                      textField={(props) => <TextField {...props} InputLabelProps={{ shrink: true }} />}
+                    />
+                  </LocalizationProvider>
+                </Box>
+              </Grid>
+            </React.Fragment>
+          ))}
+        </Grid>
+        <Grid container spacing={1}>
+          <Grid item xs={6}>
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              onClick={addAvailabilityField}
+            >
+              Add Availability
+            </Button>
+          </Grid>
+          <Grid item xs={6}>
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              onClick={handlePublish}
+            >
+              Publish
+            </Button>
+          </Grid>
+        </Grid>
       </Box>
       <Snackbar
         open={openError}
