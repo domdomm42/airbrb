@@ -9,6 +9,7 @@ import { CreateListing } from './components/listings/createListingPage';
 import { EditListing } from './components/listings/editListingPage';
 import PublishListing from './components/listings/publishListingPage';
 import Mylistings from './components/listings/myListingsPage';
+import ListingPage from './components/listings/listingPage';
 
 function App () {
   return (
@@ -23,6 +24,7 @@ function App () {
           <Route path="/createlisting"element={<CreateListing />} />
           <Route path="/editlisting/:listingid"element={<EditListing />} />
           <Route path="/publishlisting/:listingid"element={<PublishListing />} />
+          <Route path="/listings/:listingid"element={<ListingPage />} />
           <Route path="*" element={<ErrorPage />} />
       </Routes>
     </div>
