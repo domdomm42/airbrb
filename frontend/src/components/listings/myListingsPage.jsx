@@ -14,6 +14,7 @@ import Container from '@mui/material/Container';
 import Rating from '@mui/material/Rating';
 import BathroomIcon from '@mui/icons-material/Bathroom';
 import HotelIcon from '@mui/icons-material/Hotel';
+import FoundationIcon from '@mui/icons-material/Foundation';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
@@ -175,9 +176,6 @@ const MyListings = () => {
                           {listing.listing.title}
                         </Typography>
                         <Typography variant="subtitle1" gutterBottom>
-                          {listing.listing.metadata.propertyType}
-                        </Typography>
-                        <Typography variant="subtitle2" gutterBottom>
                           ${listing.listing.price} AUD per night
                         </Typography>
                         <Grid container spacing={1} alignItems="flex-start" justifyContent="flex-start">
@@ -185,13 +183,19 @@ const MyListings = () => {
                             <BathroomIcon name="bathroom" />
                           </Grid>
                           <Grid item>
-                            <Typography>{listing.listing.metadata.bathrooms} Bath</Typography>
+                            <Typography>{listing.listing.metadata.bathrooms}</Typography>
                           </Grid>
                           <Grid item>
                             <HotelIcon name="bedroom" />
                           </Grid>
                           <Grid item>
-                            <Typography>{listing.listing.metadata.bedrooms} Bed</Typography>
+                            <Typography>{listing.listing.metadata.bedrooms}</Typography>
+                          </Grid>
+                          <Grid item>
+                            <FoundationIcon name="divider" />
+                          </Grid>
+                          <Grid item>
+                            <Typography>{listing.listing.metadata.propertyType}</Typography>
                           </Grid>
                         </Grid>
 
