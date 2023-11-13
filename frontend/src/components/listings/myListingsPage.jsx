@@ -14,8 +14,23 @@ import Container from '@mui/material/Container';
 import Rating from '@mui/material/Rating';
 import BathroomIcon from '@mui/icons-material/Bathroom';
 import HotelIcon from '@mui/icons-material/Hotel';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 const MyListings = () => {
+  const [openError, setOpenError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [openSuccess, setOpenSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+
+  const handleCloseError = () => {
+    setOpenError(false);
+  };
+
+  const handleCloseSuccess = () => {
+    setOpenSuccess(false);
+  };
+
   // State to store the user's listings
   const [userListings, setUserListings] = useState([]);
 
@@ -45,6 +60,7 @@ const MyListings = () => {
                 },
               });
               const detailedListing = await res.json();
+              detailedListing.buttonText = detailedListing.listing.availability.length > 0 ? 'Unpublish' : 'Go Live'
               detailedListing.id = listing.id;
               return detailedListing;
             })
@@ -60,6 +76,48 @@ const MyListings = () => {
 
     fetchUserListings();
   }, []);
+
+  const fetchUnpublishListing = (listingId) => {
+    // Implement your fetch logic here
+    fetch(`http://localhost:5005/listings/unpublish/${listingId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          setSuccessMessage('Successfully unpublishing listing');
+          setOpenSuccess(true);
+          setUserListings((prevListings) => {
+            return prevListings.map((listing) => {
+              if (listing.id === listingId) {
+                return {
+                  ...listing,
+                  buttonText: 'Go Live',
+                };
+              }
+              return listing;
+            });
+          });
+        } else {
+          response.json()
+            .then(data => {
+              setErrorMessage(data.error);
+              setOpenError(true);
+            })
+            .catch(error => {
+              console.error('Error parsing JSON:', error);
+            });
+        }
+      })
+      .catch((error) => {
+        setErrorMessage(error);
+        setOpenError(true);
+      });
+  };
+
   return (
     <>
       <CssBaseline />
@@ -148,10 +206,21 @@ const MyListings = () => {
                       </CardContent>
                       <CardActions>
                         <Grid container justifyContent="space-between">
-                        <Grid item>
+                          <Grid item>
+                          { listing.buttonText === 'Go Live'
+                            ? (
                             <Button size="small" component={RouterLink} to={`/publishlisting/${listing.id}`}>
-                              Go Live
+                              {listing.buttonText}
                             </Button>
+                              )
+                            : (
+                            <Button
+                              size="small"
+                              onClick={() => fetchUnpublishListing(listing.id)}
+                            >
+                              {listing.buttonText}
+                            </Button>
+                              )}
                           </Grid>
                           <Grid item>
                             <Button size="small" component={RouterLink} to={`/editlisting/${listing.id}`}>
@@ -173,6 +242,26 @@ const MyListings = () => {
                   <Typography variant="body1">No listings available.</Typography>
                 )}
           </Grid>
+          <Snackbar
+            open={openError}
+            autoHideDuration={5000}
+            onClose={handleCloseError}
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          >
+            <Alert onClose={handleCloseError} severity="error">
+              {errorMessage}
+            </Alert>
+          </Snackbar>
+          <Snackbar
+            open={openSuccess}
+            autoHideDuration={5000}
+            onClose={handleCloseSuccess}
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          >
+            <Alert onClose={handleCloseSuccess} severity="success">
+              {successMessage}
+            </Alert>
+          </Snackbar>
         </Container>
       </main>
     </>

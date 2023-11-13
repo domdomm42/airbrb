@@ -7,7 +7,7 @@ import ErrorPage from './components/misc/notFoundPage';
 import Navbar from './components/misc/Navbar';
 import { CreateListing } from './components/listings/createListingPage';
 import { EditListing } from './components/listings/editListingPage';
-import { PublishListing } from './components/listings/publishListingPage';
+import PublishListing from './components/listings/publishListingPage';
 import Mylistings from './components/listings/myListingsPage';
 
 function App () {
