@@ -19,9 +19,7 @@ const CustomLink = React.forwardRef((props, ref) => (
 CustomLink.displayName = 'CustomLink';
 
 export function Register () {
-  // eslint-disable-next-line
   const [openError, setOpenError] = useState(false);
-  // eslint-disable-next-line
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleCloseError = () => {

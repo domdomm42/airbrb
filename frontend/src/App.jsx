@@ -7,6 +7,7 @@ import ErrorPage from './components/misc/notFoundPage';
 import Navbar from './components/misc/Navbar';
 import { CreateListing } from './components/listings/createListingPage';
 import { EditListing } from './components/listings/editListingPage';
+import PublishListing from './components/listings/publishListingPage';
 import Mylistings from './components/listings/myListingsPage';
 
 function App () {
@@ -20,7 +21,8 @@ function App () {
           <Route path="/register"element={<Register />} />
           <Route path="/mylistings"element={<Mylistings />} />
           <Route path="/createlisting"element={<CreateListing />} />
-          <Route path="/listings/:listingid"element={<EditListing />} />
+          <Route path="/editlisting/:listingid"element={<EditListing />} />
+          <Route path="/publishlisting/:listingid"element={<PublishListing />} />
           <Route path="*" element={<ErrorPage />} />
       </Routes>
     </div>
