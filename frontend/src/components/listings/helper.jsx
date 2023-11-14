@@ -11,6 +11,10 @@ export const ListingHelpers = () => {
     setAddress(event.target.value);
   };
 
+  const handleCityChange = (setCity) => (event) => {
+    setCity(event.target.value);
+  };
+
   const handlePriceChange = (setPrice) => (event) => {
     setPrice(event.target.value);
   };
@@ -68,6 +72,7 @@ export const ListingHelpers = () => {
   return {
     handleTitleChange,
     handleAddressChange,
+    handleCityChange,
     handlePriceChange,
     handleBathroomChange,
     handlePropertyTypeChange,

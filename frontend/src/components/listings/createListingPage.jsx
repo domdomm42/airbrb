@@ -81,6 +81,7 @@ export function CreateListing () {
     const formData = new FormData(event.currentTarget);
     const title = formData.get('title');
     const address = formData.get('address');
+    const city = formData.get('city');
     const price = formData.get('price');
     const thumbnail = listingThumbnail;
     const propertyType = formData.get('propertyType');
@@ -102,6 +103,7 @@ export function CreateListing () {
     if (
       !title ||
       !address ||
+      !city ||
       price === null ||
       !thumbnail ||
       !propertyType ||
@@ -125,6 +127,7 @@ export function CreateListing () {
     }, 0);
 
     const metadata = {
+      city,
       pictures,
       propertyType,
       bathrooms: JSON.parse(numBathrooms),
@@ -205,6 +208,16 @@ export function CreateListing () {
                 label='Listing Address'
                 name='address'
                 autoComplete='listing-address'
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                id='city'
+                label='City'
+                name='city'
+                autoComplete='listing-city'
               />
             </Grid>
             <Grid item xs={12}>

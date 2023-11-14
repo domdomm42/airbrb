@@ -25,6 +25,7 @@ export function EditListing () {
   // States for each GET request
   const [title, setTitle] = useState('');
   const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
   const [price, setPrice] = useState('');
   const [listingThumbnail, setThumbnail] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState('');
@@ -42,6 +43,7 @@ export function EditListing () {
   const {
     handleTitleChange,
     handleAddressChange,
+    handleCityChange,
     handlePriceChange,
     handleBathroomChange,
     handlePropertyTypeChange,
@@ -54,6 +56,7 @@ export function EditListing () {
 
   const onTitleChange = handleTitleChange(setTitle);
   const onAddressChange = handleAddressChange(setAddress);
+  const onCityChange = handleCityChange(setCity);
   const onPriceChange = handlePriceChange(setPrice);
   const onBathroomChange = handleBathroomChange(setNumBathrooms);
   const onPropertyTypeChange = handlePropertyTypeChange(setPropertyType);
@@ -119,6 +122,7 @@ export function EditListing () {
         console.log(data.listing.numBathrooms)
         setTitle(data.listing.title);
         setAddress(data.listing.address);
+        setCity(data.listing.metadata.city)
         setPrice(data.listing.price);
         setThumbnailPreview(data.listing.thumbnail);
         setThumbnail(data.listing.thumbnail)
@@ -142,6 +146,7 @@ export function EditListing () {
     const formData = new FormData(event.currentTarget);
     const editTitle = formData.get('title') || title;
     const editAddress = formData.get('address') || address;
+    const editCity = formData.get('city') || city;
     const editPrice = formData.get('price') || price;
     const thumbnail = formData.get('thumbnail') || listingThumbnail;
     const editPropertyTypes = formData.get('propertyType') || propertyType;
@@ -163,6 +168,7 @@ export function EditListing () {
     if (
       !editTitle ||
       !editAddress ||
+      !editCity ||
       editPrice === null ||
       !thumbnail ||
       !editPropertyTypes ||
@@ -187,6 +193,7 @@ export function EditListing () {
     // const allPictures = ()
 
     const metadata = {
+      city,
       pictures,
       propertyType,
       bathrooms: JSON.parse(numBathrooms),
@@ -269,6 +276,18 @@ export function EditListing () {
                 autoComplete='listing-address'
                 value={address}
                 onChange={onAddressChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                id='city'
+                // label='City'
+                name='city'
+                autoComplete='listing-city'
+                value={city}
+                onChange={onCityChange}
               />
             </Grid>
             <Grid item xs={12}>
