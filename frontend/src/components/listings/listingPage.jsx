@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -11,6 +11,15 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import ListingDetails from '../../components-test/listings/ListingDetails';
+
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { differenceInCalendarDays } from 'date-fns';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+import TextField from '@mui/material/TextField';
+import Rating from '@mui/material/Rating';
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
@@ -28,7 +37,21 @@ function ListingPage () {
   const [userBookings, setUserBookings] = React.useState([]);
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
+
+  // BOOKING STUFF
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+
+  const [bookingStart, setBookingStart] = useState(null);
+  const [bookingEnd, setBookingEnd] = useState(null);
+  const [bookingCost, setBookingCost] = useState(0);
+
   const [priceType, setPriceType] = React.useState('per night');
+
+  // REVIEW STUFF
+  const [reviewText, setReviewText] = useState('');
+  const [reviewRating, setReviewRating] = useState(0);
+
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
@@ -81,6 +104,14 @@ function ListingPage () {
     // Fetch listing details when the component mounts
     fetchListingDetails();
   }, [listingid, token, navigate]);
+
+  useEffect(() => {
+    if (bookingStart && bookingEnd && listingDetails) {
+      const numberOfNights = differenceInCalendarDays(new Date(bookingEnd), new Date(bookingStart));
+      const totalCost = numberOfNights * listingDetails.listing.price;
+      setBookingCost(totalCost);
+    }
+  }, [bookingStart, bookingEnd, listingDetails]);
 
   useEffect(() => {
     const fetchUserBookings = async () => {
@@ -152,6 +183,71 @@ function ListingPage () {
     : images.length;
 
   console.log(listingDetails);
+
+  const handleBookings = async () => {
+    try {
+      const formattedStartDate = bookingStart ? bookingStart.toISOString() : null;
+      const formattedEndDate = bookingEnd ? bookingEnd.toISOString() : null;
+      console.log(formattedStartDate);
+      console.log(formattedEndDate);
+      console.log(bookingCost);
+      console.log(token);
+
+      const response = await fetch(`http://localhost:5005/bookings/new/${listingid}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          dateRange: {
+            startDate: formattedStartDate,
+            endDate: formattedEndDate,
+          },
+          totalPrice: bookingCost,
+        }),
+      });
+
+      if (response.ok) {
+        setSnackbarMessage('Booking request sent successfully');
+        setSnackbarOpen(true);
+      } else {
+        setSnackbarMessage('Error sending booking request');
+        setSnackbarOpen(true);
+      }
+    } catch (error) {
+      setSnackbarMessage('Error sending booking request');
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handleReviews = async () => {
+    try {
+      const response = await fetch(`http://localhost:5005/listings/${listingid}/review/${userBookings}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          review: reviewText,
+          rating: reviewRating,
+        }),
+      });
+      if (response.ok) {
+        setReviewText('');
+        setReviewRating(0);
+        setSnackbarMessage('Review Successfully posted');
+        setSnackbarOpen(true);
+      } else {
+        setSnackbarMessage('An Error has occurred');
+        setSnackbarOpen(true);
+      }
+    } catch (error) {
+      setSnackbarMessage('Error sending review request');
+      setSnackbarOpen(true);
+    }
+  };
 
   return (
     <>
@@ -266,13 +362,53 @@ function ListingPage () {
                 color="text.primary"
                 gutterBottom
               >My Bookings</Typography>
+
             </Box>
             <Container maxWidth="sm">
               {renderBookingStatus()}
             </Container>
           </Container>
+          {
+            (
+              <Container maxWidth="sm">
+                <Box mt={2}>
+                  <TextField
+                    label="Write a Review"
+                    multiline
+                    rows={4}
+                    fullWidth
+                    value={reviewText}
+                    onChange={(e) => setReviewText(e.target.value)}
+                  />
+                  <Box mt={2}>
+                    <Typography component="legend">Rating</Typography>
+                    <Rating
+                      name="simple-controlled"
+                      value={reviewRating}
+                      onChange={(event, newValue) => {
+                        setReviewRating(newValue);
+                      }}
+                    />
+                  </Box>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleReviews}
+                    sx={{ mt: 2 }}
+                  >
+                    Submit Review
+                  </Button>
+                </Box>
+              </Container>
+            )
+          }
         </Box>
       </main>
+      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)}>
+      <Alert onClose={() => setSnackbarOpen(false)} severity="success" sx={{ width: '100%' }}>
+        {snackbarMessage}
+      </Alert>
+    </Snackbar>
     </>
   );
 }
