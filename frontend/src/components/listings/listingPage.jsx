@@ -11,10 +11,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import ListingDetails from '../../components-test/listings/ListingDetails';
-
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { differenceInCalendarDays } from 'date-fns';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
@@ -42,7 +38,9 @@ function ListingPage () {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
+  // eslint-disable-next-line no-unused-vars
   const [bookingStart, setBookingStart] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [bookingEnd, setBookingEnd] = useState(null);
   const [bookingCost, setBookingCost] = useState(0);
 
@@ -184,6 +182,7 @@ function ListingPage () {
 
   console.log(listingDetails);
 
+  // eslint-disable-next-line no-unused-vars
   const handleBookings = async () => {
     try {
       const formattedStartDate = bookingStart ? bookingStart.toISOString() : null;
