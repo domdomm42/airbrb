@@ -35,6 +35,9 @@ const Navbar = () => {
                 <Button color="inherit" component={RouterLink} to="/mylistings">
                   My Listings
                 </Button>
+                <Button color="inherit" component={RouterLink} to="/hostedListings">
+                  Hosted Listings
+                </Button>
                 <Button color="inherit" component={RouterLink} to="/listings">
                   All Listings
                 </Button>

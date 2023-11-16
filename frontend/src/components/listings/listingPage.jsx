@@ -187,10 +187,24 @@ function ListingPage () {
     try {
       const formattedStartDate = bookingStart ? bookingStart.toISOString() : null;
       const formattedEndDate = bookingEnd ? bookingEnd.toISOString() : null;
-      console.log(formattedStartDate);
-      console.log(formattedEndDate);
-      console.log(bookingCost);
-      console.log(token);
+
+      const isDateInRange = (startDate, endDate, range) => {
+        console.log('hello');
+        const rangeStart = new Date(range.start);
+        const rangeEnd = new Date(range.end);
+        return startDate >= rangeStart && endDate <= rangeEnd;
+      };
+
+      const isAvailable = listingDetails.listing.availability.some(range =>
+        isDateInRange(bookingStart, bookingEnd, range)
+      );
+
+      if (!isAvailable) {
+        setSnackbarMessage('Requested dates are not available for booking');
+        setSnackbarOpen(true);
+        return;
+      }
+      console.log(formattedStartDate, formattedEndDate, bookingCost, token);
 
       const response = await fetch(`http://localhost:5005/bookings/new/${listingid}`, {
         method: 'POST',
@@ -221,19 +235,34 @@ function ListingPage () {
   };
 
   const handleReviews = async () => {
+    console.log(reviewText)
+    console.log(reviewRating)
     try {
-      const response = await fetch(`http://localhost:5005/listings/${listingid}/review/${userBookings}`, {
+      const response = await fetch(`http://localhost:5005/listings/${listingid}/review/${userBookings[0].id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          review: reviewText,
-          rating: reviewRating,
+          review: { review: reviewText, rating: reviewRating }
         }),
       });
       if (response.ok) {
+        const newReview = {
+          review: reviewText,
+          rating: reviewRating,
+        };
+        setListingDetails(prevDetails => {
+          const updatedReviews = prevDetails.listing.reviews ? [...prevDetails.listing.reviews, newReview] : [newReview];
+          return {
+            ...prevDetails,
+            listing: {
+              ...prevDetails.listing,
+              reviews: updatedReviews
+            }
+          };
+        });
         setReviewText('');
         setReviewRating(0);
         setSnackbarMessage('Review Successfully posted');
@@ -366,6 +395,22 @@ function ListingPage () {
             <Container maxWidth="sm">
               {renderBookingStatus()}
             </Container>
+            <Box mt={5}>
+            <Typography component="h4" variant="h4" align="left" color="text.primary" gutterBottom>
+              Reviews
+            </Typography>
+            {listingDetails && listingDetails.listing.reviews && listingDetails.listing.reviews.length > 0
+              ? (
+                  listingDetails.listing.reviews.map((review, index) =>
+                <Box key={index} mb={2}>
+                  <Typography variant="subtitle1">{review.review} - {review.rating} Stars</Typography>
+                </Box>
+                  ))
+              : (
+              <Typography variant="body2">No reviews yet.</Typography>
+                )}
+          </Box>
+
           </Container>
           {
             (

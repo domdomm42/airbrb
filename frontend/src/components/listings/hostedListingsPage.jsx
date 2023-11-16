@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-// import { Link as RouterLink } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -8,11 +7,12 @@ import Grid from '@mui/material/Grid';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import CssBaseline from '@mui/material/CssBaseline';
-// import Stack from '@mui/material/Stack';
 
 const HostedListings = () => {
   const [bookingRequests, setBookingRequests] = useState([]);
-  const [hostListingIds, setHostListingIds] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
@@ -20,8 +20,23 @@ const HostedListings = () => {
   const userEmail = localStorage.getItem('email');
 
   useEffect(() => {
-    getAllBookingsForHost().then(() => getBookedBookings());
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        await getAllBookingsForHost();
+      } catch (error) {
+        console.error(error);
+        setError(error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
+
+  console.log(bookingRequests)
 
   // GETS ALL HOST LISTINGS
   const getAllBookingsForHost = async () => {
@@ -37,7 +52,8 @@ const HostedListings = () => {
         const data = await response.json();
         const hostListings = data.listings.filter(listing => listing.owner === userEmail);
         const listingIds = hostListings.map(listing => listing.id);
-        setHostListingIds(listingIds);
+
+        await getBookedBookings(listingIds);
       } else {
         console.error('Error fetching listings: ', response.statusText);
       }
@@ -46,7 +62,7 @@ const HostedListings = () => {
     }
   };
 
-  const getBookedBookings = async () => {
+  const getBookedBookings = async (listingIds) => {
     try {
       const response = await fetch('http://localhost:5005/bookings', {
         method: 'GET',
@@ -58,8 +74,7 @@ const HostedListings = () => {
       if (response.ok) {
         const data = await response.json();
         console.log(data);
-        console.log(hostListingIds)
-        const filteredBookings = data.bookings.filter(booking => hostListingIds.includes(Number(booking.listingId)));
+        const filteredBookings = data.bookings.filter(booking => listingIds.includes(Number(booking.listingId)));
         console.log(filteredBookings);
         setBookingRequests(filteredBookings);
       } else {
@@ -71,9 +86,10 @@ const HostedListings = () => {
   };
 
   const handleBookingAction = async (bookingId, action) => {
+    console.log(action.toLowerCase());
     try {
       const response = await fetch(`http://localhost:5005/bookings/${action.toLowerCase()}/${bookingId}`, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
@@ -81,7 +97,12 @@ const HostedListings = () => {
       });
       if (response.ok) {
         setSnackbarMessage(`Booking ${action.toLowerCase()}ed successfully`);
-        getBookedBookings();
+        setBookingRequests(currentBookings => currentBookings.map(booking => {
+          if (booking.id === bookingId) {
+            return { ...booking, status: action.toLowerCase() === 'accept' ? 'accepted' : 'declined' };
+          }
+          return booking;
+        }));
       } else {
         console.log(`http://localhost:5005/bookings/${action.toLowerCase()}/${bookingId}`);
         setSnackbarMessage(`Failed to ${action.toLowerCase()} booking`);
@@ -97,6 +118,14 @@ const HostedListings = () => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <>

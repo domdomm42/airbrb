@@ -71,7 +71,7 @@ export const Home = () => {
 
           // Calculate rating for each listing based on reviews
           const listingsWithRating = detailedListings.map((listing) => {
-            const reviews = listing.reviews || [];
+            const reviews = listing.listing.reviews || [];
             const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
             const averageRating = totalRating / reviews.length || 0;
             return {
@@ -306,7 +306,7 @@ export const Home = () => {
 
                         <Grid container alignItems="center">
                           <Grid item>
-                            <Rating name="half-rating-read" defaultValue={0} value={listing.listing.rating} precision={0.5} readOnly />
+                            <Rating name="half-rating-read" defaultValue={0} value={listing.rating} precision={0.5} readOnly />
                           </Grid>
                           <Grid item>
                             <Typography variant="caption" gutterBottom>({listing.listing.reviews.length} reviews)</Typography>
