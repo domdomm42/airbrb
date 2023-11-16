@@ -10,6 +10,7 @@ import { EditListing } from './components/listings/editListingPage';
 import PublishListing from './components/listings/publishListingPage';
 import Mylistings from './components/listings/myListingsPage';
 import ListingPage from './components/listings/listingPage';
+import HostedListings from './components/listings/hostedListingsPage';
 
 function App () {
   return (
@@ -25,6 +26,7 @@ function App () {
           <Route path="/editlisting/:listingid"element={<EditListing />} />
           <Route path="/publishlisting/:listingid"element={<PublishListing />} />
           <Route path="/listings/:listingid"element={<ListingPage />} />
+          <Route path="/hostedListings"element={<HostedListings />} />
           <Route path="*" element={<ErrorPage />} />
       </Routes>
     </div>
