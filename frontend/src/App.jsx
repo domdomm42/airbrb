@@ -4,7 +4,7 @@ import { Home } from './components/misc/homePage';
 import { Login } from './components/auth/loginPage';
 import { Register } from './components/auth/registerPage';
 import ErrorPage from './components/misc/notFoundPage';
-import Navbar from './components/misc/Navbar';
+import Navbar from './components-test/Navbar';
 import { CreateListing } from './components/listings/createListingPage';
 import { EditListing } from './components/listings/editListingPage';
 import PublishListing from './components/listings/publishListingPage';
