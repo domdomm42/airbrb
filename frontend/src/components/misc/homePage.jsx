@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -214,7 +215,7 @@ export const Home = () => {
             {filteredListings.length > 0
               ? (
                   filteredListings.map((listing) => (
-                    <Grid item key={listing.id} xs={12} sm={6} md={4}>
+                    <Grid item key={listing.id} xs={12} sm={6} md={4} component={RouterLink} to={`/listings/${listing.id}?dateFilter=${JSON.stringify(dateRange)}`} sx={{ textDecoration: 'None' }}>
                       <Card
                         sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
                       >

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -19,10 +19,13 @@ const images = ['https://source.unsplash.com/random', 'https://source.unsplash.c
 function ListingPage () {
   const theme = useTheme();
   const { listingid } = useParams();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search); // Access query parameters
+  const dateFilter = searchParams.get('dateFilter');
+  console.log(dateFilter);
   const [activeStep, setActiveStep] = React.useState(0);
   const [listingDetails, setListingDetails] = React.useState(null);
   const token = localStorage.getItem('token');
-  const maxSteps = images.length;
   const navigate = useNavigate();
 
   const handleNext = () => {
@@ -68,13 +71,13 @@ function ListingPage () {
     return null;
   }
 
-  // const imagesToDisplay = listingDetails.listing.images.length > 0
-  //   ? listingDetails.listing.images
-  //   : images;
+  const imagesToDisplay = listingDetails.listing.metadata.pictures.length > 0
+    ? listingDetails.listing.metadata.pictures
+    : images;
 
-  // const maxSteps = listingDetails.listing.images.length > 0
-  //   ? listingDetails.listing.images.length
-  //   : images.length;
+  const maxSteps = listingDetails.listing.metadata.pictures.length > 0
+    ? listingDetails.listing.metadata.pictures.length
+    : images.length;
 
   console.log(listingDetails);
 
@@ -109,7 +112,7 @@ function ListingPage () {
               onChangeIndex={handleStepChange}
               enableMouseEvents
             >
-              {images.map((step, index) => (
+              {imagesToDisplay.map((step, index) => (
                 <div key={index} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                   {Math.abs(activeStep - index) <= 2
                     ? (
