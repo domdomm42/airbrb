@@ -205,7 +205,7 @@ export function CreateListing () {
                 required
                 fullWidth
                 id='address'
-                label='Listing Address'
+                label='Full Listing Address'
                 name='address'
                 autoComplete='listing-address'
               />
