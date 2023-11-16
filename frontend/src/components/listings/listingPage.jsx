@@ -26,6 +26,7 @@ import { differenceInCalendarDays } from 'date-fns';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import TextField from '@mui/material/TextField';
+import Rating from '@mui/material/Rating';
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
@@ -53,6 +54,11 @@ function ListingPage () {
   const [bookingCost, setBookingCost] = useState(0);
 
   const [priceType, setPriceType] = React.useState('per night');
+
+  // REVIEW STUFF
+  const [reviewText, setReviewText] = useState('');
+  const [reviewRating, setReviewRating] = useState(0);
+
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
@@ -218,6 +224,34 @@ function ListingPage () {
       }
     } catch (error) {
       setSnackbarMessage('Error sending booking request');
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handleReviews = async () => {
+    try {
+      const response = await fetch(`http://localhost:5005/listings/${listingid}/review/${userBookings}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          review: reviewText,
+          rating: reviewRating,
+        }),
+      });
+      if (response.ok) {
+        setReviewText('');
+        setReviewRating(0);
+        setSnackbarMessage('Review Successfully posted');
+        setSnackbarOpen(true);
+      } else {
+        setSnackbarMessage('An Error has occurred');
+        setSnackbarOpen(true);
+      }
+    } catch (error) {
+      setSnackbarMessage('Error sending review request');
       setSnackbarOpen(true);
     }
   };
@@ -389,6 +423,7 @@ function ListingPage () {
                 color="text.primary"
                 gutterBottom
               >My Bookings</Typography>
+
             </Box>
             {/* Display booking status */}
             <Container maxWidth="sm">
@@ -396,6 +431,40 @@ function ListingPage () {
               {/* ... (existing code) */}
             </Container>
           </Container>
+          {
+            (
+              <Container maxWidth="sm">
+                <Box mt={2}>
+                  <TextField
+                    label="Write a Review"
+                    multiline
+                    rows={4}
+                    fullWidth
+                    value={reviewText}
+                    onChange={(e) => setReviewText(e.target.value)}
+                  />
+                  <Box mt={2}>
+                    <Typography component="legend">Rating</Typography>
+                    <Rating
+                      name="simple-controlled"
+                      value={reviewRating}
+                      onChange={(event, newValue) => {
+                        setReviewRating(newValue);
+                      }}
+                    />
+                  </Box>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleReviews}
+                    sx={{ mt: 2 }}
+                  >
+                    Submit Review
+                  </Button>
+                </Box>
+              </Container>
+            )
+          }
         </Box>
       </main>
       <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)}>
