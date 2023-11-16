@@ -119,6 +119,8 @@ const MyListings = () => {
       });
   };
 
+  console.log(userListings);
+
   return (
     <>
       <CssBaseline />
@@ -189,7 +191,7 @@ const MyListings = () => {
                             <HotelIcon name="bedroom" />
                           </Grid>
                           <Grid item>
-                            <Typography>{listing.listing.metadata.bedrooms}</Typography>
+                            <Typography>{listing.listing.metadata.numBeds}</Typography>
                           </Grid>
                           <Grid item>
                             <FoundationIcon name="divider" />
