@@ -8,9 +8,8 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import MuiLink from '@mui/material/Link';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
 import { useAuth } from './authContext';
+import SnackbarAlert from '../../components-test/SnackbarAlert';
 
 const CustomLink = React.forwardRef((props, ref) => (
   <RouterLink ref={ref} {...props} />
@@ -152,16 +151,12 @@ export function Register () {
           </Grid>
         </Box>
       </Box>
-      <Snackbar
+      <SnackbarAlert
         open={openError}
-        autoHideDuration={5000}
         onClose={handleCloseError}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert onClose={handleCloseError} severity="error">
-          {errorMessage}
-        </Alert>
-      </Snackbar>
+        message={errorMessage}
+        severity="error"
+      />
     </Container>
   );
 }

@@ -68,7 +68,19 @@ export const Home = () => {
               return detailedListing;
             })
           );
-          const sortedListings = [...detailedListings].sort((a, b) => {
+
+          // Calculate rating for each listing based on reviews
+          const listingsWithRating = detailedListings.map((listing) => {
+            const reviews = listing.reviews || [];
+            const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
+            const averageRating = totalRating / reviews.length || 0;
+            return {
+              ...listing,
+              rating: averageRating,
+            };
+          });
+
+          const sortedListings = [...listingsWithRating].sort((a, b) => {
             const titleA = a.listing.title.toUpperCase();
             const titleB = b.listing.title.toUpperCase();
 
@@ -80,8 +92,7 @@ export const Home = () => {
             }
             return 0;
           });
-
-          setUserListings(sortedListings);
+          setUserListings(sortedListings.filter(listing => listing.listing.availability.length > 0));
         } else {
           console.error('Error fetching user listings');
         }
@@ -91,6 +102,61 @@ export const Home = () => {
     };
 
     fetchUserListings();
+
+    const fetchUserBookings = async () => {
+      const userToken = localStorage.getItem('token');
+      const userEmail = localStorage.getItem('email');
+
+      try {
+        const response = await fetch('http://localhost:5005/bookings', {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        });
+
+        if (response.ok) {
+          const { bookings } = await response.json();
+
+          // Filter user bookings by owner and status "accepted" or "pending"
+          const relevantBookings = bookings.filter(
+            (booking) => booking.owner === userEmail && (booking.status === 'accepted' || booking.status === 'pending')
+          );
+
+          // Filter user listings based on relevant bookings' listingId
+          const listingsWithBookings = userListings.filter((listing) =>
+            relevantBookings.some((booking) => booking.listingId === listing.id)
+          );
+
+          // Sort user listings based on bookings with "accepted" or "pending" status
+          const sortedListings = listingsWithBookings.sort((a, b) => {
+            // Logic to sort listings based on booking status
+            if (relevantBookings.find((booking) => booking.listingId === a.id)?.status === 'accepted') {
+              return -1;
+            }
+            if (relevantBookings.find((booking) => booking.listingId === b.id)?.status === 'accepted') {
+              return 1;
+            }
+            // If "accepted" bookings are not found, sort "pending" bookings
+            if (relevantBookings.find((booking) => booking.listingId === a.id)?.status === 'pending') {
+              return -1;
+            }
+            if (relevantBookings.find((booking) => booking.listingId === b.id)?.status === 'pending') {
+              return 1;
+            }
+            // If neither "accepted" nor "pending" is found, maintain original order
+            return 0;
+          });
+
+          setFilteredListings(sortedListings);
+        } else {
+          console.error('Error fetching user bookings');
+        }
+      } catch (error) {
+        console.error('Error fetching user bookings:', error);
+      }
+    };
+
+    fetchUserBookings();
   }, []);
 
   const handleSearchAndFilters = () => {
@@ -240,7 +306,7 @@ export const Home = () => {
 
                         <Grid container alignItems="center">
                           <Grid item>
-                            <Rating name="half-rating-read" defaultValue={2.5} precision={0.5} readOnly />
+                            <Rating name="half-rating-read" defaultValue={0} value={listing.listing.rating} precision={0.5} readOnly />
                           </Grid>
                           <Grid item>
                             <Typography variant="caption" gutterBottom>({listing.listing.reviews.length} reviews)</Typography>
