@@ -61,7 +61,7 @@ const MyListings = () => {
                 },
               });
               const detailedListing = await res.json();
-              detailedListing.buttonText = detailedListing.listing.availability.length > 0 ? 'Unpublish' : 'Go Live'
+              detailedListing.buttonText = detailedListing.listing.availability.length > 0 ? 'Delete' : 'Go Live'
               detailedListing.id = listing.id;
               return detailedListing;
             })
@@ -234,8 +234,8 @@ const MyListings = () => {
                             </Button>
                           </Grid>
                           <Grid item>
-                            <Button size="small" >
-                              Delete
+                            <Button size="small" component={RouterLink} to={`/listings/${listing.id}`}>
+                              View
                             </Button>
                           </Grid>
                         </Grid>
