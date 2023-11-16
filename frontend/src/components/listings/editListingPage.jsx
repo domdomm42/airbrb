@@ -25,6 +25,7 @@ export function EditListing () {
   // States for each GET request
   const [title, setTitle] = useState('');
   const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
   const [price, setPrice] = useState('');
   const [listingThumbnail, setThumbnail] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState('');
@@ -34,6 +35,7 @@ export function EditListing () {
   const [amenities, setAmenities] = useState([]);
   const [bedroomDetails, setBedroomDetails] = useState([]);
   const BED_SIZES = ['Single', 'Double', 'Queen', 'King'];
+  const [pictures, setPictures] = useState([]);
 
   const [openError, setOpenError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -41,11 +43,12 @@ export function EditListing () {
   const {
     handleTitleChange,
     handleAddressChange,
+    handleCityChange,
     handlePriceChange,
     handleBathroomChange,
     handlePropertyTypeChange,
     handleBedroomCountChange,
-    handleBedroomDetailChange,
+    handleBedTypeChange,
     handleThumbnailChange,
     handleAmenityChange,
     handleCloseError,
@@ -53,14 +56,56 @@ export function EditListing () {
 
   const onTitleChange = handleTitleChange(setTitle);
   const onAddressChange = handleAddressChange(setAddress);
+  const onCityChange = handleCityChange(setCity);
   const onPriceChange = handlePriceChange(setPrice);
   const onBathroomChange = handleBathroomChange(setNumBathrooms);
   const onPropertyTypeChange = handlePropertyTypeChange(setPropertyType);
   const onBedroomCountChange = handleBedroomCountChange(setNumBedrooms, setBedroomDetails);
-  const onBedroomDetailChange = handleBedroomDetailChange(bedroomDetails, setBedroomDetails);
+  const onBedTypeChange = handleBedTypeChange(bedroomDetails, setBedroomDetails);
   const onThumbnailChange = handleThumbnailChange(setThumbnail, setThumbnailPreview);
   const onAmenityChange = handleAmenityChange(amenities, setAmenities);
   const onCloseError = handleCloseError(setOpenError);
+
+  const onPicturesChange = async (event) => {
+    if (event.target.files) {
+      const files = Array.from(event.target.files);
+      try {
+        const dataUrls = await Promise.all(files.map(async (file) => {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = () => reject(reader.error);
+            reader.readAsDataURL(file);
+          });
+        }));
+        setPictures(prevPictures => [...prevPictures, ...dataUrls]);
+      } catch (error) {
+        console.error('Error reading file:', error);
+      }
+    }
+  };
+
+  const removePicture = (index) => {
+    setPictures(prevPictures => prevPictures.filter((_, i) => i !== index));
+  };
+
+  const removeBedFromRoom = (roomIndex, bedIndex) => {
+    setBedroomDetails(currentBedrooms => {
+      const updatedBedrooms = [...currentBedrooms];
+      if (updatedBedrooms[roomIndex] && updatedBedrooms[roomIndex].beds[bedIndex] !== undefined) {
+        updatedBedrooms[roomIndex].beds.splice(bedIndex, 1);
+      }
+      return updatedBedrooms;
+    });
+  };
+
+  const addBedToRoom = (roomIndex) => {
+    setBedroomDetails(currentBedrooms => {
+      const updatedBedrooms = [...currentBedrooms];
+      updatedBedrooms[roomIndex].beds.push({ type: '' });
+      return updatedBedrooms;
+    });
+  };
 
   // GET req so user know what their old data was
   useEffect(() => {
@@ -77,6 +122,7 @@ export function EditListing () {
         console.log(data.listing.numBathrooms)
         setTitle(data.listing.title);
         setAddress(data.listing.address);
+        setCity(data.listing.metadata.city)
         setPrice(data.listing.price);
         setThumbnailPreview(data.listing.thumbnail);
         setThumbnail(data.listing.thumbnail)
@@ -85,6 +131,8 @@ export function EditListing () {
         setNumBedrooms(data.listing.metadata.bedrooms);
         setAmenities(data.listing.metadata.amenities);
         setBedroomDetails(data.listing.metadata.bedroomDetails);
+        setPictures(data.listing.metadata.pictures)
+        pictures.push(data.listing.thumbnail);
       })
       .catch(error => {
         setErrorMessage(error.message || 'Error fetching data');
@@ -96,13 +144,15 @@ export function EditListing () {
   const handleEditListings = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const EditTitle = formData.get('title') || title;
-    const EditAddress = formData.get('address') || address;
-    const EditPrice = formData.get('price') || price;
+    const editTitle = formData.get('title') || title;
+    const editAddress = formData.get('address') || address;
+    const editCity = formData.get('city') || city;
+    const editPrice = formData.get('price') || price;
     const thumbnail = formData.get('thumbnail') || listingThumbnail;
-    const EditPropertyType = formData.get('propertyType') || propertyType;
-    const EditNumBathrooms = formData.get('numBathrooms') || numBathrooms;
-    const EditNumBedrooms = formData.get('numBedrooms') || numBedrooms;
+    const editPropertyTypes = formData.get('propertyType') || propertyType;
+    const editNumBathrooms = formData.get('numBathrooms') || numBathrooms;
+    const editNumBedrooms = formData.get('numBedrooms') || numBedrooms;
+    // const allPictures = formData.get('pictures') || pictures;
 
     // Assuming you can't rent a room without a room or a bathroom, also assuming you can rent your place out for free for whatever reason.
     if (
@@ -116,13 +166,14 @@ export function EditListing () {
     }
 
     if (
-      !EditTitle ||
-      !EditAddress ||
-      EditPrice === null ||
+      !editTitle ||
+      !editAddress ||
+      !editCity ||
+      editPrice === null ||
       !thumbnail ||
-      !EditPropertyType ||
-      !EditNumBathrooms ||
-      !EditNumBedrooms ||
+      !editPropertyTypes ||
+      !editNumBathrooms ||
+      !editNumBedrooms ||
       bedroomDetails.length !== parseInt(numBedrooms)
     ) {
       setErrorMessage('Please fill in all required fields.');
@@ -133,10 +184,21 @@ export function EditListing () {
     if (thumbnail) {
       formData.append('thumbnail', listingThumbnail);
     }
+
+    const totalBeds = bedroomDetails.reduce((total, room) => {
+      const filledBeds = room.beds.filter(bed => bed.type !== '');
+      return total + filledBeds.length;
+    }, 0);
+
+    // const allPictures = ()
+
     const metadata = {
+      city,
+      pictures,
       propertyType,
       bathrooms: JSON.parse(numBathrooms),
       bedrooms: JSON.parse(numBedrooms),
+      numBeds: totalBeds,
       amenities,
       bedroomDetails,
     };
@@ -220,6 +282,18 @@ export function EditListing () {
               <TextField
                 required
                 fullWidth
+                id='city'
+                // label='City'
+                name='city'
+                autoComplete='listing-city'
+                value={city}
+                onChange={onCityChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
                 id='price'
                 // label='Listing Price (per night)'
                 name='price'
@@ -244,6 +318,28 @@ export function EditListing () {
                 </Box>
               )}
             </Grid>
+            <Grid item xs={12}>
+            <Button variant='contained' component='label'>
+              Upload More Pictures
+              <input type='file' hidden onChange={onPicturesChange} multiple />
+            </Button>
+            {pictures.map((imageSrc, index) => (
+            <Box key={index} mt={2} textAlign='center'>
+              <img
+                src={imageSrc}
+                alt={`Picture Preview ${index + 1}`}
+                style={{ maxWidth: '100%', height: 'auto' }}
+              />
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => removePicture(index)}
+              >
+                Remove Picture
+              </Button>
+            </Box>
+            ))}
+          </Grid>
             <Grid item xs={12}>
               <FormControl required fullWidth>
                 <InputLabel id='propertyType-label'>Property Type</InputLabel>
@@ -292,29 +388,38 @@ export function EditListing () {
                 onChange={onBedroomCountChange}
               />
             </Grid>
-            {bedroomDetails.map((detail, index) => (
-              <Grid item xs={12} key={index}>
-                <FormControl required fullWidth>
-                  <InputLabel
-                    id={`bed-type-label-${index}`}
-                  >{`Bed Type in Bedroom ${index + 1}`}</InputLabel>
-                  <Select
-                    labelId={`bed-type-label-${index}`}
-                    id={`bed-type-select-${index}`}
-                    value={detail.bedType}
-                    label={`Bed Type in Bedroom ${index + 1}`}
-                    onChange={(e) =>
-                      onBedroomDetailChange(index, e.target.value)
-                    }
-                  >
-                    {BED_SIZES.map((size) => (
-                      <MenuItem key={size} value={size}>
-                        {size}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
+            {bedroomDetails.map((room, roomIndex) => (
+          <Grid item xs={12} key={roomIndex}>
+            <Typography variant="subtitle1">Bedroom {roomIndex + 1}</Typography>
+
+            {room.beds.length === 0
+              ? <Typography>No beds</Typography>
+              : room.beds.map((bed, bedIndex) => (
+                  <FormControl fullWidth key={`bed-${roomIndex}-${bedIndex}`}>
+                    <InputLabel id={`bed-type-label-${roomIndex}-${bedIndex}`}>Bed {bedIndex + 1} Type</InputLabel>
+                    <Select
+                      labelId={`bed-type-label-${roomIndex}-${bedIndex}`}
+                      label={`Bed ${bedIndex + 1} Type`}
+                      value={bed.type}
+                      onChange={(e) => onBedTypeChange(roomIndex, bedIndex, e.target.value)}
+                    >
+                      {BED_SIZES.map((size, sizeIndex) => (
+                        <MenuItem key={sizeIndex} value={size}>{size}</MenuItem>
+                      ))}
+                    </Select>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      onClick={() => removeBedFromRoom(roomIndex, bedIndex)}
+                    >
+                      Remove Bed {bedIndex + 1}
+                    </Button>
+                  </FormControl>
+              )
+              )}
+
+            <Button onClick={() => addBedToRoom(roomIndex)}>Add Bed to Room {roomIndex + 1}</Button>
+          </Grid>
             ))}
             <Grid item xs={12}>
               <FormGroup>
