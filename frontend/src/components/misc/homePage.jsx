@@ -155,7 +155,7 @@ export const Home = () => {
             pb: 6,
           }}
         >
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, ml: 2, mt: -6 }}>
         <TextField
           label="Search Listings"
           variant="outlined"
@@ -172,7 +172,7 @@ export const Home = () => {
           Search
         </Button> */}
       </Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mx: 4 }}>
         <TextField label="Min Bedrooms" value={minBedrooms} onChange={(e) => setMinBedrooms(e.target.value)} />
         <TextField label="Max Bedrooms" value={maxBedrooms} onChange={(e) => setMaxBedrooms(e.target.value)} />
         <LocalizationProvider dateAdapter={AdapterDayjs}>
