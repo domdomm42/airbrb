@@ -7,8 +7,6 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
@@ -16,6 +14,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import ThumbnailUpload from '../../components-test/listings/ThumbnailUpload.jsx';
+import SnackbarAlert from '../../components-test/SnackbarAlert.jsx';
 
 import { ListingHelpers } from './helper.jsx';
 const CustomLink = React.forwardRef((props, ref) => (
@@ -53,7 +53,6 @@ export function CreateListing () {
   const onBedTypeChange = handleBedTypeChange(bedroomDetails, setBedroomDetails);
   const onThumbnailChange = handleThumbnailChange(setThumbnail, setThumbnailPreview);
   const onAmenityChange = handleAmenityChange(amenities, setAmenities);
-  const onCloseError = handleCloseError(setOpenError);
 
   const removeBedFromRoom = (roomIndex, bedIndex) => {
     setBedroomDetails(currentBedrooms => {
@@ -232,19 +231,10 @@ export function CreateListing () {
               />
             </Grid>
             <Grid item xs={12}>
-              <Button variant='contained' component='label'>
-                Upload Thumbnail
-                <input type='file' hidden onChange={onThumbnailChange} />
-              </Button>
-              {thumbnailPreview && (
-                <Box mt={2} textAlign='center'>
-                  <img
-                    src={thumbnailPreview}
-                    alt='Thumbnail Preview'
-                    style={{ maxWidth: '100%', height: 'auto' }}
-                  />
-                </Box>
-              )}
+            <ThumbnailUpload
+              onThumbnailChange={onThumbnailChange}
+              thumbnailPreview={thumbnailPreview}
+            />
             </Grid>
             <Grid item xs={12}>
               <FormControl required fullWidth>
@@ -373,16 +363,12 @@ export function CreateListing () {
           </Grid>
         </Box>
       </Box>
-      <Snackbar
+      <SnackbarAlert
         open={openError}
-        autoHideDuration={5000}
-        onClose={onCloseError}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert onClose={onCloseError} severity='error'>
-          {errorMessage}
-        </Alert>
-      </Snackbar>
+        onClose={handleCloseError}
+        message={errorMessage}
+        severity="error"
+      />
     </Container>
   );
 }

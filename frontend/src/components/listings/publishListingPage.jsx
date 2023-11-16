@@ -3,15 +3,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
 import Grid from '@mui/material/Grid';
+import AvailabilityPicker from '../../components-test/listings/AvailabilityPicker';
+import SnackbarAlert from '../../components-test/SnackbarAlert';
 
 const PublishListing = () => {
   const [availability, setAvailability] = useState([{ start: null, end: null }]);
@@ -39,6 +35,12 @@ const PublishListing = () => {
     const validAvailability = availability.filter(
       (item) => item.start && item.end
     );
+
+    if (validAvailability.length < 1) {
+      setErrorMessage('Please select an availability range.');
+      setOpenError(true);
+      return;
+    }
 
     // Convert the object of objects to a list of objects
     const availabilityList = Object.values(validAvailability);
@@ -89,32 +91,12 @@ const PublishListing = () => {
         </Typography>
         <Grid container spacing={3} mb={4}>
           {availability.map((item, index) => (
-            <React.Fragment key={index}>
-              <Grid item xs={12} md={6}>
-                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      label={`Start Date ${index + 1}`}
-                      value={item.start}
-                      onChange={(date) => handleDateChange(date, index, 'start')}
-                      textField={(props) => <TextField {...props} InputLabelProps={{ shrink: true }} />}
-                    />
-                  </LocalizationProvider>
-                </Box>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      label={`End Date ${index + 1}`}
-                      value={item.end}
-                      onChange={(date) => handleDateChange(date, index, 'end')}
-                      textField={(props) => <TextField {...props} InputLabelProps={{ shrink: true }} />}
-                    />
-                  </LocalizationProvider>
-                </Box>
-              </Grid>
-            </React.Fragment>
+            <AvailabilityPicker
+              key={index}
+              item={item}
+              index={index}
+              handleDateChange={handleDateChange}
+            />
           ))}
         </Grid>
         <Grid container spacing={1}>
@@ -140,16 +122,12 @@ const PublishListing = () => {
           </Grid>
         </Grid>
       </Box>
-      <Snackbar
+      <SnackbarAlert
         open={openError}
-        autoHideDuration={5000}
         onClose={handleCloseError}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert onClose={handleCloseError} severity="error">
-          {errorMessage}
-        </Alert>
-      </Snackbar>
+        message={errorMessage}
+        severity="error"
+      />
     </Container>
   );
 };

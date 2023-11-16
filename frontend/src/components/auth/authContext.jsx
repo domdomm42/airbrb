@@ -23,6 +23,7 @@ export const AuthProvider = ({ children }) => {
     setIsLoggedIn(false);
     // Remove token from localStorage on logout
     localStorage.removeItem('token');
+    localStorage.removeItem('email');
   };
 
   return (
