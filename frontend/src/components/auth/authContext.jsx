@@ -1,9 +1,17 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Check for a token in localStorage
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
 
   const login = () => {
     // Perform login logic, set isLoggedIn to true
@@ -13,6 +21,8 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     // Perform logout logic, set isLoggedIn to false
     setIsLoggedIn(false);
+    // Remove token from localStorage on logout
+    localStorage.removeItem('token');
   };
 
   return (
