@@ -68,7 +68,19 @@ export const Home = () => {
               return detailedListing;
             })
           );
-          const sortedListings = [...detailedListings].sort((a, b) => {
+
+          // Calculate rating for each listing based on reviews
+          const listingsWithRating = detailedListings.map((listing) => {
+            const reviews = listing.reviews || [];
+            const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
+            const averageRating = totalRating / reviews.length || 0;
+            return {
+              ...listing,
+              rating: averageRating,
+            };
+          });
+
+          const sortedListings = [...listingsWithRating].sort((a, b) => {
             const titleA = a.listing.title.toUpperCase();
             const titleB = b.listing.title.toUpperCase();
 
@@ -80,8 +92,7 @@ export const Home = () => {
             }
             return 0;
           });
-
-          setUserListings(sortedListings);
+          setUserListings(sortedListings.filter(listing => listing.listing.availability.length > 0));
         } else {
           console.error('Error fetching user listings');
         }
@@ -240,7 +251,7 @@ export const Home = () => {
 
                         <Grid container alignItems="center">
                           <Grid item>
-                            <Rating name="half-rating-read" defaultValue={2.5} precision={0.5} readOnly />
+                            <Rating name="half-rating-read" defaultValue={0} value={listing.listing.rating} precision={0.5} readOnly />
                           </Grid>
                           <Grid item>
                             <Typography variant="caption" gutterBottom>({listing.listing.reviews.length} reviews)</Typography>
