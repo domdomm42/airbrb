@@ -38,8 +38,6 @@ export const Home = () => {
     setFilteredListings(userListings);
   }, [userListings]);
 
-  console.log(userListings);
-
   useEffect(() => {
     const fetchUserListings = async () => {
       const token = localStorage.getItem('token');

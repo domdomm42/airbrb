@@ -117,8 +117,6 @@ export function EditListing () {
     })
       .then(response => response.json())
       .then(data => {
-        console.log(data);
-        console.log(data.listing.numBathrooms)
         setTitle(data.listing.title);
         setAddress(data.listing.address);
         setCity(data.listing.metadata.city)

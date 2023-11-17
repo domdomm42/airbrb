@@ -36,8 +36,6 @@ const HostedListings = () => {
     fetchData();
   }, []);
 
-  console.log(bookingRequests)
-
   // GETS ALL HOST LISTINGS
   const getAllBookingsForHost = async () => {
     try {
@@ -73,9 +71,7 @@ const HostedListings = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
         const filteredBookings = data.bookings.filter(booking => listingIds.includes(Number(booking.listingId)));
-        console.log(filteredBookings);
         setBookingRequests(filteredBookings);
       } else {
         console.error('Error fetching bookings: ', response.statusText);
@@ -86,7 +82,6 @@ const HostedListings = () => {
   };
 
   const handleBookingAction = async (bookingId, action) => {
-    console.log(action.toLowerCase());
     try {
       const response = await fetch(`http://localhost:5005/bookings/${action.toLowerCase()}/${bookingId}`, {
         method: 'PUT',
@@ -104,7 +99,6 @@ const HostedListings = () => {
           return booking;
         }));
       } else {
-        console.log(`http://localhost:5005/bookings/${action.toLowerCase()}/${bookingId}`);
         setSnackbarMessage(`Failed to ${action.toLowerCase()} booking`);
       }
       setOpenSnackbar(true);
