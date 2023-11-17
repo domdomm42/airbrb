@@ -100,61 +100,6 @@ export const Home = () => {
     };
 
     fetchUserListings();
-
-    const fetchUserBookings = async () => {
-      const userToken = localStorage.getItem('token');
-      const userEmail = localStorage.getItem('email');
-
-      try {
-        const response = await fetch('http://localhost:5005/bookings', {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        });
-
-        if (response.ok) {
-          const { bookings } = await response.json();
-
-          // Filter user bookings by owner and status "accepted" or "pending"
-          const relevantBookings = bookings.filter(
-            (booking) => booking.owner === userEmail && (booking.status === 'accepted' || booking.status === 'pending')
-          );
-
-          // Filter user listings based on relevant bookings' listingId
-          const listingsWithBookings = userListings.filter((listing) =>
-            relevantBookings.some((booking) => booking.listingId === listing.id)
-          );
-
-          // Sort user listings based on bookings with "accepted" or "pending" status
-          const sortedListings = listingsWithBookings.sort((a, b) => {
-            // Logic to sort listings based on booking status
-            if (relevantBookings.find((booking) => booking.listingId === a.id)?.status === 'accepted') {
-              return -1;
-            }
-            if (relevantBookings.find((booking) => booking.listingId === b.id)?.status === 'accepted') {
-              return 1;
-            }
-            // If "accepted" bookings are not found, sort "pending" bookings
-            if (relevantBookings.find((booking) => booking.listingId === a.id)?.status === 'pending') {
-              return -1;
-            }
-            if (relevantBookings.find((booking) => booking.listingId === b.id)?.status === 'pending') {
-              return 1;
-            }
-            // If neither "accepted" nor "pending" is found, maintain original order
-            return 0;
-          });
-
-          setFilteredListings(sortedListings);
-        } else {
-          console.error('Error fetching user bookings');
-        }
-      } catch (error) {
-        console.error('Error fetching user bookings:', error);
-      }
-    };
-
-    fetchUserBookings();
   }, []);
 
   const handleSearchAndFilters = () => {
