@@ -136,8 +136,6 @@ export function CreateListing () {
       bedroomDetails,
     };
 
-    console.log(metadata);
-
     try {
       const response = await fetch('http://localhost:5005/listings/new', {
         method: 'POST',

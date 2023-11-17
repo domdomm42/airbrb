@@ -73,19 +73,15 @@ function ListingPage () {
 
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
           // Check if dateFilter contains startDate or endDate
           const startDate = dateFilter.start;
           const endDate = dateFilter.end;
-          console.log(startDate);
-          console.log(endDate);
           if (!(startDate == null && endDate == null)) {
             // Calculate the price based on the difference between endDate and startDate
             const millisecondsPerDay = 24 * 60 * 60 * 1000;
             const startTime = new Date(startDate).getTime();
             const endTime = new Date(endDate).getTime();
             const numberOfDays = Math.round((endTime - startTime) / millisecondsPerDay);
-            console.log(numberOfDays);
             // Calculate the total price for the entire stay
             data.listing.price = numberOfDays * data.listing.price;
             setPriceType('for full stay');
@@ -190,8 +186,6 @@ function ListingPage () {
     ? listingDetails.listing.metadata.pictures.length
     : images.length;
 
-  console.log(listingDetails);
-
   // eslint-disable-next-line no-unused-vars
   const handleBookings = async () => {
     try {
@@ -213,7 +207,6 @@ function ListingPage () {
         setSnackbarOpen(true);
         return;
       }
-      console.log(formattedStartDate, formattedEndDate, bookingCost, token);
 
       const response = await fetch(`http://localhost:5005/bookings/new/${listingid}`, {
         method: 'POST',
@@ -246,8 +239,6 @@ function ListingPage () {
   const userEmail = localStorage.getItem('email');
 
   const handleReviews = async () => {
-    console.log(reviewText)
-    console.log(reviewRating)
     try {
       const response = await fetch(`http://localhost:5005/listings/${listingid}/review/${userBookings[0].id}`, {
         method: 'PUT',

@@ -152,8 +152,6 @@ const MyListings = () => {
       });
   };
 
-  console.log(userListings);
-
   return (
     <>
       <CssBaseline />
