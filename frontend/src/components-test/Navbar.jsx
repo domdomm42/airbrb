@@ -36,6 +36,9 @@ const Navbar = () => {
                 <Button color="inherit" component={RouterLink} to="/hostedListings">
                   Hosted Listings
                 </Button>
+                <Button color="inherit" component={RouterLink} to="/">
+                  All Listings
+                </Button>
                 <Button color="inherit" onClick={logout}>
                   Logout
                 </Button>
