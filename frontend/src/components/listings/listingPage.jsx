@@ -14,7 +14,6 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import TextField from '@mui/material/TextField';
 import { Card, CardContent, Grid, Typography, Button, Rating } from '@mui/material';
-
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -145,32 +144,6 @@ function ListingPage () {
     fetchUserBookings();
   }, []);
 
-  const [reviews, setReviews] = useState([]);
-
-  // Fetch reviews for the current listing
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const response = await fetch(`http://localhost:5005/reviews?listingId=${listingid}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setReviews(data.reviews); // Assuming the response contains an array of reviews
-        } else {
-          console.error('Error fetching reviews');
-        }
-      } catch (error) {
-        console.error('Error fetching reviews:', error);
-      }
-    };
-
-    fetchReviews();
-  }, [listingid, token]);
-
   const renderBookingStatus = () => {
     if (!localStorage.getItem('token')) {
       return null; // User not logged in
@@ -185,10 +158,20 @@ function ListingPage () {
       <div>
         <h3>Booking Status:</h3>
         {userBookings.map((booking) => (
-          <div key={booking.id}>
-            <p>Status: {booking.status}</p>
-            {/* You can display other relevant booking details here */}
-          </div>
+          <Grid item key={booking.id} xs={12} md={6}>
+            <Card>
+            <CardContent style={{
+              backgroundColor: booking.status === 'accepted' ? 'rgb(193, 225, 193)' : (booking.status === 'pending' ? 'rgb(250, 160, 160)' : 'white'),
+              padding: '10px',
+            }}>
+                {/* Display reviewer */}
+                <Typography variant="body1">Booking Id: {booking.id}</Typography>
+                {/* Display review details */}
+                <Typography variant="body1">Status: {booking.status}</Typography>
+                {/* Use the Rating component to display the rating */}
+              </CardContent>
+            </Card>
+          </Grid>
         ))}
       </div>
     );
@@ -279,7 +262,8 @@ function ListingPage () {
               rating: reviewRating,
               reviewer: userEmail,
             }
-          }),
+          }
+        ),
       });
       if (response.ok) {
         const newReview = {
@@ -442,66 +426,22 @@ function ListingPage () {
                 />
               </LocalizationProvider>
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} mt={2}>
               <Button variant="contained" color="primary" onClick={handleBookings}>
                 Book Now
               </Button>
-              <Typography variant="h6">
+              <Typography variant="h6" mt={1}>
                 Total Cost: {bookingCost} AUD
               </Typography>
             </Grid>
-            <Container maxWidth="sm">
               {renderBookingStatus()}
-            </Container>
-            <Box mt={5}>
-            <Typography component="h4" variant="h4" align="left" color="text.primary" gutterBottom>
-              Reviews
-            </Typography>
-            {listingDetails && listingDetails.listing.reviews && listingDetails.listing.reviews.length > 0
-              ? (
-                  listingDetails.listing.reviews.map((review, index) =>
-                <Box key={index} mb={2}>
-                  <Typography variant="subtitle1">{review.review} - {review.rating} Stars</Typography>
-                </Box>
-                  ))
-              : (
-              <Typography variant="body2">No reviews yet.</Typography>
-                )}
-          </Box>
-
-          </Container>
-          <Container maxWidth="sm">
-            <Box mt={5}>
-              <Typography
-                component="h4"
-                variant="h4"
-                align="left"
-                color="text.primary"
-                gutterBottom
-              >
-                Reviews
-              </Typography>
-              <Grid container spacing={2}>
-                {reviews.map((review, index) => (
-                  <Grid item key={index} xs={12} md={6}>
-                    <Card>
-                      <CardContent>
-                        {/* Display review details */}
-                        <Typography variant="body1">{review.review}</Typography>
-                        {/* Use the Rating component to display the rating */}
-                        <Rating name={`rating-${index}`} value={review.rating} readOnly />
-                        {/* Display reviewer */}
-                        <Typography variant="subtitle2">By: {review.reviewer}</Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))}
-              </Grid>
-            </Box>
           </Container>
           {
             (
               <Container maxWidth="sm">
+                <Typography component="h4" variant="h4" align="left" color="text.primary" mt={5} gutterBottom>
+                    Reviews
+                </Typography>
                 <Box mt={2}>
                   <TextField
                     label="Write a Review"
@@ -529,6 +469,24 @@ function ListingPage () {
                   >
                     Submit Review
                   </Button>
+                </Box>
+                <Box mt={5}>
+                  {listingDetails && listingDetails.listing.reviews && listingDetails.listing.reviews.length > 0
+                    ? (
+                        listingDetails.listing.reviews.map((review, index) =>
+                        <Grid item key={index} xs={12} md={6}>
+                          <Card>
+                            <CardContent>
+                              <Typography variant="subtitle2">By: {review.reviewer}</Typography>
+                              <Rating name={`rating-${index}`} value={review.rating} readOnly />
+                              <Typography variant="body1">{review.review}</Typography>
+                            </CardContent>
+                          </Card>
+                        </Grid>
+                        ))
+                    : (
+                    <Typography variant="body2">No reviews yet.</Typography>
+                      )}
                 </Box>
               </Container>
             )

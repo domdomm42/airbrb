@@ -60,7 +60,7 @@ const MyListings = () => {
             })
           );
           const listingsWithRating = detailedListings.map((listing) => {
-            const reviews = listing.reviews || [];
+            const reviews = listing.listing.reviews || [];
             const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
             const averageRating = totalRating / reviews.length || 0;
             return {
@@ -119,7 +119,6 @@ const MyListings = () => {
         setOpenError(true);
       });
   };
-
   const fetchDeleteListing = (listingId) => {
     // Implement your fetch logic here
     fetch(`http://localhost:5005/listings/${listingId}`, {
