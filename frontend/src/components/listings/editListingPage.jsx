@@ -149,7 +149,6 @@ export function EditListing () {
     const editPropertyTypes = formData.get('propertyType') || propertyType;
     const editNumBathrooms = formData.get('numBathrooms') || numBathrooms;
     const editNumBedrooms = formData.get('numBedrooms') || numBedrooms;
-    // const allPictures = formData.get('pictures') || pictures;
 
     // Assuming you can't rent a room without a room or a bathroom, also assuming you can rent your place out for free for whatever reason.
     if (
@@ -186,8 +185,6 @@ export function EditListing () {
       const filledBeds = room.beds.filter(bed => bed.type !== '');
       return total + filledBeds.length;
     }, 0);
-
-    // const allPictures = ()
 
     const metadata = {
       city,
