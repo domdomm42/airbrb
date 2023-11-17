@@ -2,20 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import SwipeableViews from 'react-swipeable-views';
 import { autoPlay } from 'react-swipeable-views-utils';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
 import ListingDetails from '../../components-test/listings/ListingDetails';
 import { differenceInCalendarDays } from 'date-fns';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import TextField from '@mui/material/TextField';
-import Rating from '@mui/material/Rating';
+import { Card, CardContent, Grid, Typography, Button, Rating } from '@mui/material';
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
@@ -27,7 +25,6 @@ function ListingPage () {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const dateFilter = JSON.parse(searchParams.get('dateFilter'));
-  console.log(dateFilter);
   const [activeStep, setActiveStep] = React.useState(0);
   const [listingDetails, setListingDetails] = React.useState(null);
   const [userBookings, setUserBookings] = React.useState([]);
@@ -144,6 +141,32 @@ function ListingPage () {
     fetchUserBookings();
   }, []);
 
+  const [reviews, setReviews] = useState([]);
+
+  // Fetch reviews for the current listing
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch(`http://localhost:5005/reviews?listingId=${listingid}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setReviews(data.reviews); // Assuming the response contains an array of reviews
+        } else {
+          console.error('Error fetching reviews');
+        }
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+      }
+    };
+
+    fetchReviews();
+  }, [listingid, token]);
+
   const renderBookingStatus = () => {
     if (!localStorage.getItem('token')) {
       return null; // User not logged in
@@ -234,6 +257,8 @@ function ListingPage () {
     }
   };
 
+  const userEmail = localStorage.getItem('email');
+
   const handleReviews = async () => {
     console.log(reviewText)
     console.log(reviewRating)
@@ -245,7 +270,9 @@ function ListingPage () {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          review: { review: reviewText, rating: reviewRating }
+          review: reviewText,
+          rating: reviewRating,
+          reviewer: userEmail,
         }),
       });
       if (response.ok) {
@@ -411,6 +438,35 @@ function ListingPage () {
                 )}
           </Box>
 
+          </Container>
+          <Container maxWidth="sm">
+            <Box mt={5}>
+              <Typography
+                component="h4"
+                variant="h4"
+                align="left"
+                color="text.primary"
+                gutterBottom
+              >
+                Reviews
+              </Typography>
+              <Grid container spacing={2}>
+                {reviews.map((review, index) => (
+                  <Grid item key={index} xs={12} md={6}>
+                    <Card>
+                      <CardContent>
+                        {/* Display review details */}
+                        <Typography variant="body1">{review.review}</Typography>
+                        {/* Use the Rating component to display the rating */}
+                        <Rating name={`rating-${index}`} value={review.rating} readOnly />
+                        {/* Display reviewer */}
+                        <Typography variant="subtitle2">By: {review.reviewer}</Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
           </Container>
           {
             (

@@ -15,6 +15,7 @@ const MyListingCard = ({ listing, onUnpublish }) => {
           pt: '56.25%',
         }}
         image={listing.listing.thumbnail}
+        data-testid="my-listing-card-image"
       />
       <CardContent sx={{ flexGrow: 1 }}>
         <Typography variant="h5" component="h2" gutterBottom>

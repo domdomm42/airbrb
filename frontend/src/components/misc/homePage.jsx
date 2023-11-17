@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -13,11 +10,12 @@ import Typography from '@mui/material/Typography';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import Container from '@mui/material/Container';
-import Rating from '@mui/material/Rating';
 import TextField from '@mui/material/TextField';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
+import ListingCard from '../../components-test/listings/ListingCard';
+import SearchBar from '../../components-test/Searchbar';
 
 export const Home = () => {
   // State to store the user's listings
@@ -222,23 +220,11 @@ export const Home = () => {
             pb: 6,
           }}
         >
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, ml: 2, mt: -6 }}>
-        <TextField
-          label="Search Listings"
-          variant="outlined"
-          fullWidth
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          sx={{ mr: 2 }}
-        />
-        {/* <Button
-          variant="contained"
-          color="primary"
-          onClick={handleSearchAndFilters}
-        >
-          Search
-        </Button> */}
-      </Box>
+      <SearchBar
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        handleSearchAndFilters={handleSearchAndFilters}
+      />
       <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mx: 4 }}>
         <TextField label="Min Bedrooms" value={minBedrooms} onChange={(e) => setMinBedrooms(e.target.value)} />
         <TextField label="Max Bedrooms" value={maxBedrooms} onChange={(e) => setMaxBedrooms(e.target.value)} />
@@ -282,38 +268,9 @@ export const Home = () => {
               ? (
                   filteredListings.map((listing) => (
                     <Grid item key={listing.id} xs={12} sm={6} md={4} component={RouterLink} to={`/listings/${listing.id}?dateFilter=${JSON.stringify(dateRange)}`} sx={{ textDecoration: 'None' }}>
-                      <Card
-                        sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
-                      >
-                        <CardMedia
-                          component="div"
-                          sx={{
-                            // 16:9
-                            pt: '56.25%',
-                          }}
-                          image={listing.listing.thumbnail}
-                        />
-                        <CardContent sx={{ flexGrow: 1 }}>
-                        <Typography variant="h5" component="h2" gutterBottom>
-                          {listing.listing.title}
-                        </Typography>
-                        <Typography variant="subtitle1" gutterBottom>
-                          {listing.listing.metadata.propertyType}
-                        </Typography>
-                        <Typography variant="subtitle2" gutterBottom>
-                          ${listing.listing.price} AUD per night
-                        </Typography>
-
-                        <Grid container alignItems="center">
-                          <Grid item>
-                            <Rating name="half-rating-read" defaultValue={0} value={listing.rating} precision={0.5} readOnly />
-                          </Grid>
-                          <Grid item>
-                            <Typography variant="caption" gutterBottom>({listing.listing.reviews.length} reviews)</Typography>
-                          </Grid>
-                        </Grid>
-                      </CardContent>
-                      </Card>
+                      <ListingCard
+                        listing={listing}
+                      />
                     </Grid>
                   ))
                 )
