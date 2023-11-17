@@ -279,6 +279,7 @@ function ListingPage () {
         const newReview = {
           review: reviewText,
           rating: reviewRating,
+          reviewer: userEmail,
         };
         setListingDetails(prevDetails => {
           const updatedReviews = prevDetails.listing.reviews ? [...prevDetails.listing.reviews, newReview] : [newReview];
