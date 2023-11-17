@@ -216,7 +216,6 @@ function ListingPage () {
       const formattedEndDate = bookingEnd ? bookingEnd.toISOString() : null;
 
       const isDateInRange = (startDate, endDate, range) => {
-        console.log('hello');
         const rangeStart = new Date(range.start);
         const rangeEnd = new Date(range.end);
         return startDate >= rangeStart && endDate <= rangeEnd;
@@ -273,11 +272,14 @@ function ListingPage () {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          review: reviewText,
-          rating: reviewRating,
-          reviewer: userEmail,
-        }),
+        body: JSON.stringify(
+          {
+            review: {
+              review: reviewText,
+              rating: reviewRating,
+              reviewer: userEmail,
+            }
+          }),
       });
       if (response.ok) {
         const newReview = {
