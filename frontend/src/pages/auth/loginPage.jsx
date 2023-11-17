@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import MuiLink from '@mui/material/Link';
 import { useAuth } from './authContext';
-import SnackbarAlert from '../../components-test/SnackbarAlert';
+import SnackbarAlert from '../../components/SnackbarAlert';
 
 const CustomLink = React.forwardRef((props, ref) => (
   <RouterLink ref={ref} {...props} />

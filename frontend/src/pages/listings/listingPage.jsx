@@ -8,7 +8,7 @@ import SwipeableViews from 'react-swipeable-views';
 import { autoPlay } from 'react-swipeable-views-utils';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
-import ListingDetails from '../../components-test/listings/ListingDetails';
+import ListingDetails from '../../components/listings/ListingDetails';
 import { differenceInCalendarDays } from 'date-fns';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';

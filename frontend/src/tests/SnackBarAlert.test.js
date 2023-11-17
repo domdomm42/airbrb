@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
-import SnackbarAlert from '../components-test/SnackbarAlert';
+import SnackbarAlert from '../components/SnackbarAlert';
 
 describe('SnackbarAlert Component', () => {
   it('renders SnackbarAlert with given message and severity', async () => {

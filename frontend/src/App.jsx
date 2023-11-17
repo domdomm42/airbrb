@@ -1,16 +1,16 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { Home } from './components/misc/homePage';
-import { Login } from './components/auth/loginPage';
-import { Register } from './components/auth/registerPage';
-import ErrorPage from './components/misc/notFoundPage';
-import Navbar from './components-test/Navbar';
-import { CreateListing } from './components/listings/createListingPage';
-import { EditListing } from './components/listings/editListingPage';
-import PublishListing from './components/listings/publishListingPage';
-import Mylistings from './components/listings/myListingsPage';
-import ListingPage from './components/listings/listingPage';
-import HostedListings from './components/listings/hostedListingsPage';
+import { Home } from './pages/misc/homePage';
+import { Login } from './pages/auth/loginPage';
+import { Register } from './pages/auth/registerPage';
+import ErrorPage from './pages/misc/notFoundPage';
+import Navbar from './components/Navbar';
+import { CreateListing } from './pages/listings/createListingPage';
+import { EditListing } from './pages/listings/editListingPage';
+import PublishListing from './pages/listings/publishListingPage';
+import Mylistings from './pages/listings/myListingsPage';
+import ListingPage from './pages/listings/listingPage';
+import HostedListings from './pages/listings/hostedListingsPage';
 
 function App () {
   return (

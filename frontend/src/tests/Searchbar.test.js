@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import SearchBar from '../components-test/Searchbar';
+import SearchBar from '../components/Searchbar';
 
 describe('SearchBar Component', () => {
   it('renders search bar with button', () => {

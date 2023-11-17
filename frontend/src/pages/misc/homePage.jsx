@@ -14,8 +14,8 @@ import TextField from '@mui/material/TextField';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import ListingCard from '../../components-test/listings/ListingCard';
-import SearchBar from '../../components-test/Searchbar';
+import ListingCard from '../../components/listings/ListingCard';
+import SearchBar from '../../components/Searchbar';
 
 export const Home = () => {
   // State to store the user's listings

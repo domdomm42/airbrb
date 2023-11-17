@@ -6,7 +6,7 @@ import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import { Link as RouterLink } from 'react-router-dom';
 import Logo from './logo.jsx';
-import { useAuth } from '../components/auth/authContext.jsx';
+import { useAuth } from '../pages/auth/authContext.jsx';
 
 const Navbar = () => {
   // Check if the user is logged in based on the presence of the token

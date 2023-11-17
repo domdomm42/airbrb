@@ -14,8 +14,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import ThumbnailUpload from '../../components-test/listings/ThumbnailUpload.jsx';
-import SnackbarAlert from '../../components-test/SnackbarAlert.jsx';
+import ThumbnailUpload from '../../components/listings/ThumbnailUpload.jsx';
+import SnackbarAlert from '../../components/SnackbarAlert.jsx';
 
 import { ListingHelpers } from './helper.jsx';
 const CustomLink = React.forwardRef((props, ref) => (

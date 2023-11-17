@@ -6,8 +6,8 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import AvailabilityPicker from '../../components-test/listings/AvailabilityPicker';
-import SnackbarAlert from '../../components-test/SnackbarAlert';
+import AvailabilityPicker from '../../components/listings/AvailabilityPicker';
+import SnackbarAlert from '../../components/SnackbarAlert';
 
 const PublishListing = () => {
   const [availability, setAvailability] = useState([{ start: null, end: null }]);
