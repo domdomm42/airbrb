@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import ListingDetails from '../components-test/listings/ListingDetails';
+import ListingDetails from '../components/listings/ListingDetails';
 
 const mockListingDetails = {
   listing: {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import ThumbnailUpload from '../components-test/listings/ThumbnailUpload';
+import ThumbnailUpload from '../components/listings/ThumbnailUpload';
 
 describe('ThumbnailUpload Component', () => {
   it('renders upload button', () => {

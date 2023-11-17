@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import AvailabilityPicker from '../components-test/listings/AvailabilityPicker';
+import AvailabilityPicker from '../components/listings/AvailabilityPicker';
 import dayjs from 'dayjs';
 
 jest.mock('@mui/x-date-pickers', () => {

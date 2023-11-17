@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { render, fireEvent } from '@testing-library/react';
-import MyListingCard from '../components-test/listings/MyListingCard';
+import MyListingCard from '../components/listings/MyListingCard';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

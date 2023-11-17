@@ -7,8 +7,8 @@ import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import SnackbarAlert from '../../components-test/SnackbarAlert';
-import MyListingCard from '../../components-test/listings/MyListingCard';
+import SnackbarAlert from '../../components/SnackbarAlert';
+import MyListingCard from '../../components/listings/MyListingCard';
 
 const MyListings = () => {
   const [openError, setOpenError] = useState(false);
