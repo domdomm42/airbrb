@@ -53,14 +53,14 @@ const MyListings = () => {
                 },
               });
               const detailedListing = await res.json();
-              detailedListing.buttonText = detailedListing.listing.availability.length > 0 ? 'Delete' : 'Go Live'
+              detailedListing.buttonText = detailedListing.listing.published > 0 ? 'Unpublish' : 'Go Live'
               detailedListing.id = listing.id;
               // Calculate rating for each listing based on reviews
               return detailedListing;
             })
           );
           const listingsWithRating = detailedListings.map((listing) => {
-            const reviews = listing.reviews || [];
+            const reviews = listing.listing.reviews || [];
             const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
             const averageRating = totalRating / reviews.length || 0;
             return {
@@ -81,7 +81,6 @@ const MyListings = () => {
   }, []);
 
   const fetchUnpublishListing = (listingId) => {
-    // Implement your fetch logic here
     fetch(`http://localhost:5005/listings/unpublish/${listingId}`, {
       method: 'PUT',
       headers: {
@@ -103,6 +102,38 @@ const MyListings = () => {
               }
               return listing;
             });
+          });
+        } else {
+          response.json()
+            .then(data => {
+              setErrorMessage(data.error);
+              setOpenError(true);
+            })
+            .catch(error => {
+              console.error('Error parsing JSON:', error);
+            });
+        }
+      })
+      .catch((error) => {
+        setErrorMessage(error);
+        setOpenError(true);
+      });
+  };
+  const fetchDeleteListing = (listingId) => {
+    // Implement your fetch logic here
+    fetch(`http://localhost:5005/listings/${listingId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          setSuccessMessage('Successfully Deleted listing');
+          setOpenSuccess(true);
+          setUserListings((prevListings) => {
+            return prevListings.filter((listing) => listing === listingId);
           });
         } else {
           response.json()
@@ -167,6 +198,7 @@ const MyListings = () => {
                 <MyListingCard
                   listing={listing}
                   onUnpublish={fetchUnpublishListing}
+                  onDelete={fetchDeleteListing}
                 />
               </Grid>
                 ))

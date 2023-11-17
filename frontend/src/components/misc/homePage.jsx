@@ -200,7 +200,6 @@ export const Home = () => {
       return matchesFilter;
     });
 
-    // JUST A TEMPLATE, WE DONT HAVE RATINGS YET
     if (sortOrder) {
       results.sort((a, b) => sortOrder === 'high-to-low' ? b.rating - a.rating : a.rating - b.rating);
     }

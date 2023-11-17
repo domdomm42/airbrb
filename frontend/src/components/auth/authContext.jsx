@@ -1,9 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Check for a token in localStorage
@@ -24,6 +26,7 @@ export const AuthProvider = ({ children }) => {
     // Remove token from localStorage on logout
     localStorage.removeItem('token');
     localStorage.removeItem('email');
+    navigate('/');
   };
 
   return (
