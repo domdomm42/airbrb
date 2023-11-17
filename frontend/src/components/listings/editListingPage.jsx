@@ -223,7 +223,7 @@ export function EditListing () {
         setErrorMessage(data.error || 'An error occurred');
         setOpenError(true);
       } else {
-        navigate('/');
+        navigate('/myListings');
       }
     } catch (error) {
       console.log(error);
