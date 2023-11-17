@@ -69,7 +69,7 @@ export const Home = () => {
 
           // Calculate rating for each listing based on reviews
           const listingsWithRating = detailedListings.map((listing) => {
-            const reviews = listing.reviews || [];
+            const reviews = listing.listing.reviews || [];
             const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
             const averageRating = totalRating / reviews.length || 0;
             return {
