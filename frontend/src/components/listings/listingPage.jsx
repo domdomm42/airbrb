@@ -15,6 +15,10 @@ import Alert from '@mui/material/Alert';
 import TextField from '@mui/material/TextField';
 import { Card, CardContent, Grid, Typography, Button, Rating } from '@mui/material';
 
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
 const images = ['https://source.unsplash.com/random', 'https://source.unsplash.com/random', 'https://source.unsplash.com/random', 'https://source.unsplash.com/random'];
@@ -420,6 +424,30 @@ function ListingPage () {
               >My Bookings</Typography>
 
             </Box>
+            <Grid item xs={12} md={6}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  label="Start Date"
+                  value={bookingStart}
+                  onChange={(date) => setBookingStart(date)}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+                <DatePicker
+                  label="End Date"
+                  value={bookingEnd}
+                  onChange={(date) => setBookingEnd(date)}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
+            </Grid>
+            <Grid item xs={12}>
+              <Button variant="contained" color="primary" onClick={handleBookings}>
+                Book Now
+              </Button>
+              <Typography variant="h6">
+                Total Cost: {bookingCost} AUD
+              </Typography>
+            </Grid>
             <Container maxWidth="sm">
               {renderBookingStatus()}
             </Container>
