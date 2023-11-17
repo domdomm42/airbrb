@@ -3,7 +3,6 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
 import Button from '@mui/material/Button';
 import { Link as RouterLink } from 'react-router-dom';
 import Logo from './logo.jsx';
@@ -24,7 +23,6 @@ const Navbar = () => {
             aria-label="open drawer"
             sx={{ mr: 2 }}
           >
-            <MenuIcon />
           </IconButton>
           <Logo />
           <div style={{ marginLeft: 'auto' }}>
@@ -37,9 +35,6 @@ const Navbar = () => {
                 </Button>
                 <Button color="inherit" component={RouterLink} to="/hostedListings">
                   Hosted Listings
-                </Button>
-                <Button color="inherit" component={RouterLink} to="/listings">
-                  All Listings
                 </Button>
                 <Button color="inherit" onClick={logout}>
                   Logout
