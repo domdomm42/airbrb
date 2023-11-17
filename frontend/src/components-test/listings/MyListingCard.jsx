@@ -5,7 +5,7 @@ import BathroomIcon from '@mui/icons-material/Bathroom';
 import HotelIcon from '@mui/icons-material/Hotel';
 import FoundationIcon from '@mui/icons-material/Foundation';
 
-const MyListingCard = ({ listing, onUnpublish }) => {
+const MyListingCard = ({ listing, onUnpublish, onDelete }) => {
   return (
     <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <CardMedia
@@ -86,8 +86,8 @@ const MyListingCard = ({ listing, onUnpublish }) => {
             </Button>
           </Grid>
           <Grid item>
-            <Button size="small" component={RouterLink} to={`/listings/${listing.id}`}>
-              View
+            <Button size="small" onClick={() => onDelete(listing.id)}>
+              Delete
             </Button>
           </Grid>
         </Grid>
