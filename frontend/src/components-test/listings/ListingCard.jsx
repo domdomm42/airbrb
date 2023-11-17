@@ -25,7 +25,7 @@ const MyListingCard = ({ listing }) => {
 
       <Grid container alignItems="center">
         <Grid item>
-          <Rating name="half-rating-read" defaultValue={0} value={listing.listing.rating} precision={0.5} readOnly />
+          <Rating name="half-rating-read" defaultValue={0} value={listing.rating} precision={0.5} readOnly />
         </Grid>
         <Grid item>
           <Typography variant="caption" gutterBottom>({listing.listing.reviews.length} reviews)</Typography>
